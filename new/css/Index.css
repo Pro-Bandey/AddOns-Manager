@@ -1,0 +1,111 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Left Sidebar (Details Panel) */
+.SidebarPanel {
+    width: 350px;
+    background-color: var(--ColorPrimaryContainer);
+    color: var(--ColorOnPrimaryContainer);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--Elevation2);
+    z-index: 10;
+}
+
+.SelectedExtensionIcon {
+    width: 120px;
+    height: 120px;
+    border-radius: var(--ShapeLarge);
+    margin: 0 auto 24px auto;
+    display: block;
+    background-color: var(--ColorSurface);
+    padding: 16px;
+}
+
+.SelectedExtensionTitle {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.SelectedExtensionDesc {
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.9;
+    text-align: center;
+    margin-bottom: auto;
+    /* Pushes stats to bottom */
+}
+
+.SidebarStats {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: var(--ShapeLarge);
+    padding: 16px;
+}
+
+/* Main Content Area */
+.MainPanel {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--ColorSurface);
+    overflow: hidden;
+}
+
+.MainHeader {
+    padding: 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--ColorSurfaceVariant);
+}
+
+.MainHeader .SearchField {
+    width: 400px;
+}
+
+/* Grid Layout */
+.ExtensionGrid {
+    padding: 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* Fullscreen Card variation */
+.GridCard {
+    background-color: var(--ColorSurfaceContainer);
+    border-radius: var(--ShapeExtraLarge);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: var(--TransitionStandard);
+}
+
+.GridCard:hover {
+    box-shadow: var(--Elevation2);
+    transform: translateY(-2px);
+}
+
+.GridCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.GridCardIcon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ShapeMedium);
+}
