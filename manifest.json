@@ -5,6 +5,8 @@
   "version": "5.5.0",
   "description": "Manage and control your browser extensions more easily",
 
+  "options_page": "dashboard.html",
+
   "icons": {
     "16": "icons/16.png",
     "32": "icons/32.png",
@@ -12,8 +14,6 @@
     "64": "icons/64.png",
     "128": "icons/128.png"
   },
-
-  "permissions": ["management", "storage"],
 
   "action": {
     "default_icon": {
@@ -24,5 +24,13 @@
       "128": "icons/128.png"
     },
     "default_popup": "popup.html"
+  },
+
+  "permissions": ["management", "storage", "tabs"],
+
+  "host_permissions": ["<all_urls>"],
+
+  "background": {
+    "service_worker": "js/background.js"
   }
 }

@@ -1,0 +1,608 @@
+:root {
+    --AdnMgrColorPrimary: #8e4957;
+    --AdnMgrColorOnPrimary: #FFFFFF;
+    --AdnMgrColorPrimaryContainer: #ffd9de;
+    --AdnMgrColorOnPrimaryContainer: #71333f;
+
+    --AdnMgrColorSurface: #fff8f7;
+    --AdnMgrColorOnSurface: #231a1b;
+    --AdnMgrColorSurfaceVariant: #f0dee0;
+    --AdnMgrColorOnSurfaceVariant: #524345;
+
+    --AdnMgrColorSurfaceContainerHighest: #f0dee0;
+    --AdnMgrColorSurfaceContainer: #fbeaeb;
+
+    --AdnMgrColorOutline: #847375;
+    --AdnMgrColorError: #de4e10;
+    --AdnMgrColorSuccess: #198639;
+
+    --AdnMgrFontFamily: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+    --AdnMgrShapeSmall: 8px;
+    --AdnMgrShapeMedium: 12px;
+    --AdnMgrShapeLarge: 16px;
+    --AdnMgrShapeExtraLarge: 28px;
+    --AdnMgrShapePill: 9999px;
+
+    --AdnMgrElevation1: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --AdnMgrElevation2: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+    --AdnMgrElevation3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.3);
+
+    --AdnMgrTransitionStandard: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+
+    --AdnMgrColorSidebar: var(--AdnMgrColorSurface);
+    --AdnMgrColorOnSidebar: var(--AdnMgrColorOnSurfaceVariant);
+    --AdnMgrColorSidebarActive: var(--AdnMgrColorPrimaryContainer);
+    --AdnMgrColorCard: var(--AdnMgrColorSurfaceContainer);
+    --AdnMgrColorCardHover: var(--AdnMgrColorSurfaceContainerHighest);
+    --AdnMgrGridColumns: 5;
+    --AdnMgrIconBgSize: 44px;
+}
+
+body.DarkMode {
+    --AdnMgrColorPrimary: #ffb2be;
+    --AdnMgrColorOnPrimary: #561d2a;
+    --AdnMgrColorPrimaryContainer: #71333f;
+    --AdnMgrColorOnPrimaryContainer: #ffd9de;
+
+    --AdnMgrColorSurface: #1a1112;
+    --AdnMgrColorOnSurface: #f0dee0;
+    --AdnMgrColorSurfaceVariant: #524345;
+    --AdnMgrColorOnSurfaceVariant: #d6c2c3;
+
+    --AdnMgrColorSurfaceContainerHighest: #3c3233;
+    --AdnMgrColorSurfaceContainer: #261d1e;
+
+    --AdnMgrColorOutline: #9f8c8e;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--AdnMgrFontFamily);
+}
+
+body {
+    background: var(--AdnMgrColorSurface);
+    color: var(--AdnMgrColorOnSurface);
+    font-size: 14px;
+}
+
+/* Material Design Typography Helpers */
+h2 {
+    font-weight: 500;
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: var(--AdnMgrColorOnSurface);
+}
+
+h3 {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+/* ---------------- POPUP SPECIFIC ---------------- */
+#mainBox {
+    padding: 0 16px 16px;
+    width: fit-content;
+}
+
+#mainBox hr {
+    border: none;
+    border-top: 1px solid var(--AdnMgrColorOutline);
+    opacity: 0.3;
+    margin: 10px;
+}
+
+#mainBox li i {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: var(--AdnMgrColorError);
+    color: var(--AdnMgrColorCard);
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: var(--AdnMgrShapePill);
+    box-shadow: var(--AdnMgrElevation1);
+}
+
+.DisableText {
+    font-size: 12px;
+    color: var(--AdnMgrColorOnSurfaceVariant);
+    margin-bottom: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.BoxActives,
+.BoxInActives {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+}
+
+.BoxActives li,
+.BoxInActives li {
+    text-align: center;
+    background-color: var(--AdnMgrColorCard);
+    border-radius: var(--AdnMgrShapeLarge);
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    position: relative;
+    box-shadow: none;
+    border: 1px solid transparent;
+    transition: var(--AdnMgrTransitionStandard);
+    background-repeat: no-repeat;
+    background-size: var(--AdnMgrIconBgSize);
+}
+
+.BoxActives li:hover {
+    background-color: var(--AdnMgrColorCardHover);
+    box-shadow: var(--AdnMgrElevation1);
+}
+
+.BoxActives li:active {
+    background-color: var(--AdnMgrColorPrimaryContainer);
+}
+
+.BoxInActives li:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+    background-color: var(--AdnMgrColorCardHover);
+    border-color: transparent;
+}
+
+.GridLayout {
+    grid-template-columns: repeat(var(--AdnMgrGridColumns), 1fr);
+}
+
+.GridLayout li {
+    background-position: center 16px;
+    padding: calc(var(--AdnMgrIconBgSize) + 24px) 8px 16px 8px;
+}
+
+.ListLayout {
+    grid-template-columns: 1fr;
+}
+
+.CompactLayout {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+}
+
+
+.ListLayout li,
+.CompactLayout li {
+    background-position: 10px center;
+    padding: 16px 16px 16px calc(var(--AdnMgrIconBgSize) + 32px);
+    display: flex;
+    align-items: center;
+    min-height: calc(var(--AdnMgrIconBgSize) + 16px);
+}
+
+.ListLayout li {
+    width: 100% !important;
+    height: 50px;
+}
+
+.CompactLayout li {
+    width: 96% !important;
+    height: 60px;
+}
+
+
+
+
+
+
+
+.CompactLayout li {
+    padding: 8px 12px 8px calc(var(--AdnMgrIconBgSize) + 24px);
+    min-height: calc(var(--AdnMgrIconBgSize) + 8px);
+    border-radius: var(--AdnMgrShapeMedium);
+}
+
+#mainBox li span {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--AdnMgrColorOnPrimary);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.BoxInActives li {
+    filter: grayscale(100%);
+    opacity: 0.6;
+    background-color: transparent;
+    border: 1px solid var(--AdnMgrColorSurfaceVariant);
+}
+
+
+
+
+/* ---------------- RIGHT CLICK MENU (M3 Menu) ---------------- */
+.showMenu {
+    position: fixed;
+    z-index: 9999;
+    background: var(--AdnMgrColorSurfaceContainerHighest);
+    box-shadow: var(--AdnMgrElevation2);
+    border-radius: var(--AdnMgrShapeLarge);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    width: 180px;
+    padding: 8px 0;
+}
+
+.showMenu.IsVisible {
+    display: flex;
+}
+
+.showMenu .name {
+    padding: 12px 16px;
+    color: var(--AdnMgrColorOnSurface);
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.showMenu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.showMenu li {
+    padding: 10px 16px;
+    color: var(--AdnMgrColorOnSurface);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.1s;
+    font-weight: 500;
+}
+
+.showMenu li:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    /* Tint applied over dynamic color */
+}
+
+.showMenu li[disabled] {
+    opacity: 0.38;
+    pointer-events: none;
+}
+
+/* ---------------- MODERN UI CONTROLS ---------------- */
+
+/* M3 Circular Radio */
+.CircRadio {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 12px;
+    margin-right: 20px;
+    font-weight: 500;
+    color: var(--AdnMgrColorOnSurface);
+}
+
+.CircRadio input {
+    display: none;
+}
+
+.RadioCircle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--AdnMgrColorOutline);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--AdnMgrTransitionStandard);
+}
+
+.CircRadio:hover .RadioCircle {
+    border-color: var(--AdnMgrColorOnSurface);
+}
+
+.CircRadio input:checked+.RadioCircle {
+    border-color: var(--AdnMgrColorPrimary);
+    background-color: var(--AdnMgrColorPrimary);
+}
+
+.CircRadio input:checked+.RadioCircle::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--AdnMgrColorOnPrimary);
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* M3 Switch (Toggles) */
+.IosToggle {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 32px;
+    border-radius: var(--AdnMgrShapePill);
+}
+
+.IosToggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ToggleSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--AdnMgrColorSurfaceVariant);
+    border: 2px solid var(--AdnMgrColorOutline);
+    transition: var(--AdnMgrTransitionStandard);
+    border-radius: var(--AdnMgrShapePill);
+}
+
+.ToggleSlider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 6px;
+    bottom: 6px;
+    background-color: var(--AdnMgrColorOutline);
+    transition: var(--AdnMgrTransitionStandard);
+    border-radius: 50%;
+}
+
+.IosToggle:hover .ToggleSlider {
+    background-color: var(--AdnMgrColorSurfaceContainerHighest);
+}
+
+.IosToggle input:checked+.ToggleSlider {
+    background-color: var(--AdnMgrColorPrimary);
+    border-color: var(--AdnMgrColorPrimary);
+}
+
+.IosToggle input:checked+.ToggleSlider:before {
+    transform: translateX(20px);
+    width: 24px;
+    height: 24px;
+    bottom: 2px;
+    background-color: var(--AdnMgrColorOnPrimary);
+}
+
+/* M3 Sliders */
+input[type="range"] {
+    -webkit-appearance: none;
+    background: transparent;
+    width: 200px;
+}
+
+input[type="range"]:focus {
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 16px;
+    cursor: pointer;
+    background: var(--AdnMgrColorPrimaryContainer);
+    border-radius: var(--AdnMgrShapePill);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    background: var(--AdnMgrColorPrimary);
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -4px;
+    box-shadow: var(--AdnMgrElevation1);
+    transition: transform 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* ---------------- DASHBOARD SPECIFICS ---------------- */
+.FixedGrid9 {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 12px;
+}
+
+.FixedGrid4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+/* Select & Inputs M3 */
+.SelectInput {
+    background: var(--AdnMgrColorSurfaceContainerHighest);
+    color: var(--AdnMgrColorOnSurface);
+    border: none;
+    padding: 10px 16px;
+    border-radius: var(--AdnMgrShapeLarge);
+    font-size: 14px;
+    outline: none;
+    font-family: var(--AdnMgrFontFamily);
+    cursor: pointer;
+}
+
+input[type="text"].SelectInput {
+    cursor: text;
+}
+
+.SelectInput:focus {
+    background: var(--AdnMgrColorSurfaceVariant);
+}
+
+/* M3 Tab Strip for Groups */
+.group-list-bar {
+    display: flex;
+    list-style: none;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--AdnMgrColorOutline);
+    padding: 0;
+    gap: 8px;
+    overflow-x: auto;
+}
+
+.group-list-bar li {
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: var(--AdnMgrShapeMedium) var(--AdnMgrShapeMedium) 0 0;
+    background: transparent;
+    color: var(--AdnMgrColorOnSurfaceVariant);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    transition: var(--AdnMgrTransitionStandard);
+}
+
+.group-list-bar li:hover {
+    background: var(--AdnMgrColorSurfaceContainerHighest);
+}
+
+.group-list-bar li.cur {
+    color: var(--AdnMgrColorPrimary);
+    border-bottom: 3px solid var(--AdnMgrColorPrimary);
+}
+
+.group-list-bar li i {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.group-list-bar li i:hover {
+    opacity: 1;
+}
+
+.group-del {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
+}
+
+.group-renam {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>');
+}
+
+.group-add-btn {
+    background: transparent !important;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 8px 24px !important;
+}
+
+/* M3 Dialog / Modal */
+.InfoModalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.InfoModalBackdrop.IsVisible {
+    display: flex;
+}
+
+.InfoModal {
+    background: var(--AdnMgrColorSurfaceContainerHighest);
+    padding: 24px;
+    border-radius: var(--AdnMgrShapeExtraLarge);
+    width: 420px;
+    box-shadow: var(--AdnMgrElevation3);
+}
+
+.InfoModal h3 {
+    margin-bottom: 12px;
+    color: var(--AdnMgrColorOnSurface);
+    font-size: 20px;
+}
+
+.InfoModal p {
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--AdnMgrColorOnSurfaceVariant);
+}
+
+.InfoModal .BtnClose {
+    background: var(--AdnMgrColorPrimary);
+    color: var(--AdnMgrColorOnPrimary);
+    border: none;
+    padding: 10px 24px;
+    border-radius: var(--AdnMgrShapePill);
+    cursor: pointer;
+    float: right;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.InfoModal .BtnClose:hover {
+    box-shadow: var(--AdnMgrElevation1);
+    filter: brightness(1.1);
+}
+
+.CardEditRow {
+    background: var(--AdnMgrColorCard);
+    padding: 20px;
+    border-radius: var(--AdnMgrShapeLarge);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    box-shadow: none;
+    border: 1px solid var(--AdnMgrColorSurfaceVariant);
+}
+
+.BtnReset {
+    background: var(--AdnMgrColorError);
+    color: var(--AdnMgrColorOnPrimary);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--AdnMgrShapePill);
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--AdnMgrTransitionStandard);
+}
+
+.BtnReset:hover {
+    box-shadow: var(--AdnMgrElevation1);
+    opacity: 0.9;
+}
+
+::-webkit-scrollbar {
+    display: none;
+    width: 4px;
+    height: 4px;
+}

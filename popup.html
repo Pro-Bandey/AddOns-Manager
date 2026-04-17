@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/popup.css">
+</head>
+
+<body>
+
+    <div id="mainBox">
+        <div class="PopupHeader">
+            <input type="text" id="SearchInput" placeholder="Search...">
+            <select id="ProfileSelect">
+                <option value="">All Profiles</option>
+            </select>
+            <select id="LayoutSelect"></select>
+            <select id="ThemeSelect">
+                <option value="Auto">Auto</option>
+                <option value="LightMode">Light</option>
+                <option value="DarkMode">Dark</option>
+            </select>
+            <button id="BtnDashboard" class="BtnDash">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"
+                    fill="currentColor">
+                    <path
+                        d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l103 44 40-68-84-71q2-14 3-26.5t1-25.5q0-13-1-25.5t-3-26.5l84-71-40-68-103 44q-22-24-48.5-39.5T533-674l-14-106h-79l-14 106q-31 8-57.5 23.5T321-613l-103-44-40 68 84 71q-2 14-3 26.5t-1 25.5q0 13 1 25.5t3 26.5l-84 71 40 68 103-44q22 24 48.5 39.5T427-327l14 106Zm40-150q33 0 56.5-23.5T560-390q0-33-23.5-56.5T480-470q-33 0-56.5 23.5T400-390q0 33 23.5 56.5T480-310Zm0-170Z" />
+                </svg>
+            </button>
+        </div>
+        <hr>
+        <ul id="BoxActives" class="BoxActives"></ul>
+        <div class="DisableText" id="DisableHeader">
+            <hr>Disabled Exts
+        </div>
+        <ul id="BoxInActives" class="BoxInActives"></ul>
+    </div>
+
+    <div id="rightClickMenu" class="showMenu">
+        <div class="name" id="ctxName"></div>
+        <ul>
+            <li id="ctxLock">Unlock</li>
+            <li id="ctxOptions">Options</li>
+            <li id="ctxUninstall">Uninstall</li>
+            <li id="ctxHomepage">Homepage</li>
+            <li id="ctxReload">Reload</li>
+        </ul>
+    </div>
+
+    <script src="js/sharedUtils.js"></script>
+    <script src="js/popup.js"></script>
+</body>
+
+</html>

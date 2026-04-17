@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+    <div class="Sidebar">
+        <div class="SidebarItem IsActive" data-tab="TabGen">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
+                <path
+                    d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l103 44 40-68-84-71q2-14 3-26.5t1-25.5q0-13-1-25.5t-3-26.5l84-71-40-68-103 44q-22-24-48.5-39.5T533-674l-14-106h-79l-14 106q-31 8-57.5 23.5T321-613l-103-44-40 68 84 71q-2 14-3 26.5t-1 25.5q0 13 1 25.5t3 26.5l-84 71 40 68 103-44q22 24 48.5 39.5T427-327l14 106Zm40-150q33 0 56.5-23.5T560-390q0-33-23.5-56.5T480-470q-33 0-56.5 23.5T400-390q0 33 23.5 56.5T480-310Zm0-170Z" />
+            </svg>
+            General Settings
+        </div>
+        <div class="SidebarItem" data-tab="TabGrp">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
+                <path
+                    d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z" />
+            </svg>
+            Grouping / Profiling
+        </div>
+        <div class="SidebarItem" data-tab="TabName">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
+                <path
+                    d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
+            </svg>
+            Name & Edit
+        </div>
+    </div>
+    <div class="MainContent">
+        <div id="TabGen" class="TabPanel IsVisible">
+            <h2>General</h2><br>
+            <div class="SettingsRow"><span>Theme:</span>
+                <div style="display: flex; align-items: center;"><label class="CircRadio"><input type="radio"
+                            name="Theme" value="Auto"><span class="RadioCircle"></span>Auto</label><label
+                        class="CircRadio"><input type="radio" name="Theme" value="LightMode"><span
+                            class="RadioCircle"></span>Light</label><label class="CircRadio"><input type="radio"
+                            name="Theme" value="DarkMode"><span class="RadioCircle"></span>Dark</label></div>
+            </div>
+            <div class="SettingsRow"><span>Popup Layout:</span>
+                <div style="display: flex; align-items: center;"><label class="CircRadio"><input type="radio"
+                            name="Layout" value="ListLayout"><span class="RadioCircle"></span>List</label><label
+                        class="CircRadio"><input type="radio" name="Layout" value="CompactLayout"><span
+                            class="RadioCircle"></span>Compact</label><label class="CircRadio"><input type="radio"
+                            name="Layout" value="GridLayout"><span class="RadioCircle"></span>Grid</label></div>
+            </div>
+            <div class="SettingsRow"><span>Grid Columns (5 to 10): <span id="ColVal">5</span></span><input type="range"
+                    id="GridColumns" min="4" max="7"></div>
+            <div class="SettingsRow"><span>Icon Size:</span><input type="range" id="IconSize" min="0" max="2" step="1">
+            </div>
+            <div class="SettingsRow"><span>Show Theme Dropdown (Popup)</span><label class="IosToggle"><input
+                        type="checkbox" id="ShowTheme"><span class="ToggleSlider"></span></label></div>
+            <div class="SettingsRow"><span>Show DEV Badge</span><label class="IosToggle"><input type="checkbox"
+                        id="ShowDev"><span class="ToggleSlider"></span></label></div>
+            <div class="SettingsRow" style="margin-top: 24px; padding-top: 16px;"><span>Backup &
+                    Restore:</span>
+                <div style="display: flex; gap: 8px;"><input type="file" id="ImportFile" accept=".json"
+                        style="display: none;">
+                    <button id="BtnImport" class="SelectInput"
+                        style="width:auto; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"
+                            fill="currentColor">
+                            <path
+                                d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
+                        </svg> Import
+                    </button>
+                    <button id="BtnExport" class="SelectInput"
+                        style="width:auto; cursor: pointer; background:var(--AdnMgrColorPrimary); color:var(--AdnMgrColorOnPrimary); border: none; display: flex; align-items: center; gap: 6px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"
+                            fill="currentColor">
+                            <path
+                                d="M240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Zm240-320L280-680l56-58 104 104v314h80v-314l104 104 56-58-200-200Z" />
+                        </svg> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="TabGrp" class="TabPanel">
+            <h2>Profiles</h2><br>
+            <ul class="group-list-bar" id="ProfileTabs"></ul>
+            <div id="GroupGrid" class="FixedGrid9 BoxActives GridLayout"></div>
+        </div>
+        <div id="TabName" class="TabPanel">
+            <h2>Edit Extensions</h2><br>
+            <div id="NameGrid" class="FixedGrid4"></div>
+        </div>
+    </div>
+    <div class="InfoModalBackdrop" id="InfoModal">
+        <div class="InfoModal">
+            <h3 id="ModName">Name</h3>
+            <p id="ModVer"></p>
+            <p id="ModDesc"></p>
+            <p id="ModPerm"></p>
+            <p id="ModHome"></p><button class="BtnClose" id="BtnCloseInfoModal">Close</button>
+        </div>
+    </div>
+    <script src="js/sharedUtils.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

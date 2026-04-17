@@ -1,0 +1,85 @@
+body {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+}
+
+/* M3 Navigation Drawer */
+.Sidebar {
+    width: 280px;
+    background: var(--AdnMgrColorSidebar);
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+}
+
+.SidebarItem {
+    padding: 16px 24px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    color: var(--AdnMgrColorOnSidebar);
+    border-radius: var(--AdnMgrShapePill);
+    font-weight: 500;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: var(--AdnMgrTransitionStandard);
+}
+
+.SidebarItem:hover {
+    background: var(--AdnMgrColorSurfaceContainerHighest);
+}
+
+.SidebarItem.IsActive {
+    background: var(--AdnMgrColorSidebarActive);
+    color: var(--AdnMgrColorOnPrimaryContainer);
+    font-weight: 600;
+}
+
+.MainContent {
+    flex-grow: 1;
+    padding: 32px 48px;
+    overflow-y: auto;
+    background: var(--AdnMgrColorSurface);
+}
+
+.TabPanel {
+    display: none;
+}
+
+.TabPanel.IsVisible {
+    display: block;
+    animation: fadeIn 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* M3 List Item / Row */
+.SettingsRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: var(--AdnMgrColorSurfaceContainer);
+    margin-bottom: 12px;
+    border-radius: var(--AdnMgrShapeLarge);
+    color: var(--AdnMgrColorOnSurface);
+    font-weight: 500;
+    transition: var(--AdnMgrTransitionStandard);
+}
+
+.SettingsRow:hover {
+    background: var(--AdnMgrColorSurfaceContainerHighest);
+}
