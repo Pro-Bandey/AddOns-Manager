@@ -5,10 +5,11 @@ const DefaultState = {
     IconSize: 'normal',
     ShowDevBadge: true,
     ShowThemeToggle: true,
+    ShowLayoutToggle: true,
+    PopupSelectedProfile: '',
     Groups: { "My Profile": [] },
     CustomInfo: {}
 };
-
 
 async function LoadAppState() {
     const localData = await chrome.storage.local.get(['ProManager_State']);
@@ -26,8 +27,6 @@ async function LoadAppState() {
     return { ...DefaultState, ...localState };
 }
 
-
-
 async function SaveAppState(state) {
     Object.keys(state.CustomInfo || {}).forEach(id => {
         if (state.CustomInfo[id].icon) {
@@ -42,7 +41,6 @@ async function SaveAppState(state) {
         console.warn("Cloud Sync failed", e);
     }
 }
-
 
 async function GetExtensions() {
     const exts = await new Promise(res => chrome.management.getAll(res));
@@ -86,7 +84,9 @@ function ApplyThemeAndLayout(state) {
     } else {
         document.body.className = state.Theme;
     }
-    document.documentElement.style.setProperty('--GridColumns', state.GridColumns);
+
+    // Fixed CSS Property Variables so the sliders work correctly
+    document.documentElement.style.setProperty('--AdnMgrGridColumns', state.GridColumns);
     const sizeMap = { 'small': '32px', 'normal': '48px', 'large': '64px' };
-    document.documentElement.style.setProperty('--IconBgSize', sizeMap[state.IconSize] || '44px');
+    document.documentElement.style.setProperty('--AdnMgrIconBgSize', sizeMap[state.IconSize] || '44px');
 }

@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', async () => {
     const AppState = await LoadAppState();
 
@@ -9,11 +8,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const LayoutSel = document.getElementById('LayoutSelect');
     const ThemeSel = document.getElementById('ThemeSelect');
-    if (!AppState.ShowThemeToggle) ThemeSel.style.display = 'none';
+    
+    if (!AppState.ShowThemeToggle && ThemeSel) ThemeSel.style.display = 'none';
+    if (!AppState.ShowLayoutToggle && LayoutSel) LayoutSel.style.display = 'none';
 
-    LayoutSel.innerHTML = `<option value="GridLayout">Grid</option><option value="ListLayout">List</option><option value="CompactLayout">Content</option>`;
+    LayoutSel.innerHTML = `<option value="GridLayout">Grid</option><option value="ListLayout">List</option><option value="CompactLayout">Compact</option>`;
     LayoutSel.value = AppState.Layout;
     ThemeSel.value = AppState.Theme;
+
+    // Load the Profiles into the Dropdown
+    Object.keys(AppState.Groups).forEach(g => {
+        const opt = document.createElement('option'); opt.value = g; opt.innerText = g;
+        ProfileSelect.appendChild(opt);
+    });
+
+    // Remember the last selected profile from Storage
+    if (AppState.PopupSelectedProfile && AppState.Groups[AppState.PopupSelectedProfile]) {
+        ProfileSelect.value = AppState.PopupSelectedProfile;
+    } else {
+        ProfileSelect.value = "";
+    }
 
     let ContextExtId = null;
 
@@ -35,15 +49,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             const iconUrl = GetBestIcon(ext.icons);
 
             if (!name.toLowerCase().includes(query)) continue;
-            if (profile && !profile.includes(ext.id)) continue;
 
             const isDev = ext.installType === 'development';
+            const isInProfile = profile && profile.includes(ext.id);
 
             const li = document.createElement('li');
             li.dataset.id = ext.id;
             li.style.backgroundImage = `url("${iconUrl}")`;
+            
             li.innerHTML = `
                 ${isDev && AppState.ShowDevBadge ? '<i>DEV</i>' : ''}
+                ${isInProfile ? '<span style="position:absolute; bottom:4px; right:4px; width:12px; height:12px; background-color:var(--AdnMgrColorPrimary); border-radius:50%; border:2px solid var(--AdnMgrColorCard); z-index:2; box-shadow:0 1px 2px rgba(0,0,0,0.3);"></span>' : ''}
                 <span>${name}</span>
             `;
 
@@ -60,8 +76,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 menu.style.top = `${e.clientY}px`;
                 menu.classList.add('IsVisible');
 
+                const color = await GetDominantColor(iconUrl);
+                const rgb = `rgb(${color.r}, ${color.g}, ${color.b})`;
                 document.getElementById('ctxName').innerText = name;
-                // menu.querySelectorAll('li').forEach(el => el.style.background = `var(${rgbVar})`;
+                document.getElementById('ctxName').style.background = rgb;
+                menu.querySelectorAll('li').forEach(el => el.style.background = rgb);
 
                 const ctxLock = document.getElementById('ctxLock');
                 if (ProfileSelect.value) {
@@ -89,6 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('ctxReload').addEventListener('click', () => {
         chrome.management.setEnabled(ContextExtId.id, false, () => chrome.management.setEnabled(ContextExtId.id, true, Render));
     });
+    
     document.getElementById('ctxLock').addEventListener('click', () => {
         const grp = AppState.Groups[ProfileSelect.value];
         if (grp.includes(ContextExtId.id)) grp.splice(grp.indexOf(ContextExtId.id), 1);
@@ -97,15 +117,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     Search.addEventListener('input', Render);
-    ProfileSelect.addEventListener('change', Render);
+    
+    // --- FIXED: Instantly Enable/Disable extensions based on selected profile ---
+    ProfileSelect.addEventListener('change', async (e) => { 
+        const selectedProfile = e.target.value;
+        AppState.PopupSelectedProfile = selectedProfile; 
+        SaveAppState(AppState); 
+
+        // If a specific profile is selected, update Chrome extensions
+        if (selectedProfile && AppState.Groups[selectedProfile]) {
+            const profileExtIds = AppState.Groups[selectedProfile];
+            const exts = await GetExtensions();
+
+            // Create a batch of promises to switch extensions synchronously
+            const promises = exts.map(ext => {
+                const shouldBeEnabled = profileExtIds.includes(ext.id);
+                // Only ask Chrome to toggle if the state needs to change
+                if (ext.enabled !== shouldBeEnabled) {
+                    return new Promise(res => {
+                        chrome.management.setEnabled(ext.id, shouldBeEnabled, () => {
+                            if(chrome.runtime.lastError) { /* Ignore extensions we can't control */ }
+                            res();
+                        });
+                    });
+                }
+                return Promise.resolve();
+            });
+
+            // Wait for all toggles to finish, then render
+            await Promise.all(promises);
+        }
+
+        Render(); 
+    });
+
     LayoutSel.addEventListener('change', (e) => { AppState.Layout = e.target.value; SaveAppState(AppState); Render(); });
     ThemeSel.addEventListener('change', (e) => { AppState.Theme = e.target.value; SaveAppState(AppState); Render(); });
     document.getElementById('BtnDashboard').addEventListener('click', () => chrome.tabs.create({ url: 'dashboard.html' }));
-
-    Object.keys(AppState.Groups).forEach(g => {
-        const opt = document.createElement('option'); opt.value = g; opt.innerText = g;
-        ProfileSelect.appendChild(opt);
-    });
 
     Render();
 });

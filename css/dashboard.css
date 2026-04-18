@@ -7,7 +7,7 @@ body {
 
 /* M3 Navigation Drawer */
 .Sidebar {
-    width: 280px;
+    width: 240px;
     background: var(--AdnMgrColorSidebar);
     display: flex;
     flex-direction: column;
@@ -28,19 +28,21 @@ body {
     transition: var(--AdnMgrTransitionStandard);
 }
 
-.SidebarItem:hover {
-    background: var(--AdnMgrColorSurfaceContainerHighest);
-}
 
 .SidebarItem.IsActive {
-    background: var(--AdnMgrColorSidebarActive);
-    color: var(--AdnMgrColorOnPrimaryContainer);
+    background: var(--AdnMgrColorOnSurfaceVariant);
+    color: var(--AdnMgrColorSurfaceContainer);
     font-weight: 600;
+}
+
+.SidebarItem.IsActive:hover,
+.SidebarItem:hover {
+    background: var(--AdnMgrColorOutline);
 }
 
 .MainContent {
     flex-grow: 1;
-    padding: 32px 48px;
+    padding: 32px 10px;
     overflow-y: auto;
     background: var(--AdnMgrColorSurface);
 }

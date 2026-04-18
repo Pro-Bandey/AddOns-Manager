@@ -1,7 +1,10 @@
-
 document.addEventListener('DOMContentLoaded', async () => {
     let AppState = await LoadAppState();
     let ActiveGroup = Object.keys(AppState.Groups)[0];
+
+    document.getElementById('BtnCloseInfoModal').addEventListener('click', () => {
+        document.getElementById('InfoModal').classList.remove('IsVisible');
+    });
 
     document.querySelectorAll('.SidebarItem').forEach(item => {
         item.addEventListener('click', () => {
@@ -22,8 +25,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sizeInput = document.getElementById('IconSize'); sizeInput.value = Sizes.indexOf(AppState.IconSize);
     sizeInput.addEventListener('input', e => { AppState.IconSize = Sizes[e.target.value]; SaveAppState(AppState); ApplyThemeAndLayout(AppState); });
 
-    const togTheme = document.getElementById('ShowTheme'); togTheme.checked = AppState.ShowThemeToggle; togTheme.addEventListener('change', e => { AppState.ShowThemeToggle = e.target.checked; SaveAppState(AppState); });
-    const togDev = document.getElementById('ShowDev'); togDev.checked = AppState.ShowDevBadge; togDev.addEventListener('change', e => { AppState.ShowDevBadge = e.target.checked; SaveAppState(AppState); RenderGroups(); });
+    const togTheme = document.getElementById('ShowTheme');
+    if (togTheme) { togTheme.checked = AppState.ShowThemeToggle; togTheme.addEventListener('change', e => { AppState.ShowThemeToggle = e.target.checked; SaveAppState(AppState); }); }
+
+    const togDev = document.getElementById('ShowDev');
+    if (togDev) { togDev.checked = AppState.ShowDevBadge; togDev.addEventListener('change', e => { AppState.ShowDevBadge = e.target.checked; SaveAppState(AppState); RenderGroups(); }); }
 
     ApplyThemeAndLayout(AppState);
 
@@ -62,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         Object.keys(AppState.Groups).forEach(group => {
             const li = document.createElement('li');
             if (group === ActiveGroup) li.className = 'cur';
-            li.innerHTML = `${group} <i class="group-del"></i><i class="group-renam"></i>`;
+            li.innerHTML = `${group} <i class="group-del"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></i><i class="group-renam"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M216-216h51l375-375-51-51-375 375v51Zm-72 72v-153l498-498q11-11 23.84-16 12.83-5 27-5 14.16 0 27.16 5t24 16l51 51q11 11 16 24t5 26.54q0 14.45-5.02 27.54T795-642L297-144H144Zm600-549-51-51 51 51Zm-127.95 76.95L591-642l51 51-25.95-25.05Z"/></svg></i>`;
 
             li.querySelector('.group-del').addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -114,9 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             grid.appendChild(li);
         });
-        document.getElementById('BtnCloseInfoModal').addEventListener('click', () => {
-            document.getElementById('InfoModal').classList.remove('IsVisible');
-        });
     }
 
     async function RenderNameEdit() {
@@ -130,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.className = 'CardEditRow';
             card.innerHTML = `
                 <img src="${GetBestIcon(ext.icons)}" style="width:44px; height:44px; margin:0 auto; border-radius:8px;">
-                <input type="text" value="${custom.name || ext.name}" style="padding:4px; margin-top:8px;" placeholder="Alias Name">
+                <input type="text" value="${custom.name || ext.name}" style="padding:4px;margin-top:8px;border-radius: var(--AdnMgrShapePill);outline: none;border: .5px solid var(--AdnMgrColorOnSidebar);" placeholder="Alias Name">
             `;
 
             card.querySelector('input[type="text"]').addEventListener('input', e => {
@@ -142,5 +145,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             grid.appendChild(card);
         });
     }
+
     RenderGroups(); RenderNameEdit();
 });

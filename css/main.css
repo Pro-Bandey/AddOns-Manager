@@ -166,6 +166,38 @@ h3 {
     padding: calc(var(--AdnMgrIconBgSize) + 24px) 8px 16px 8px;
 }
 
+.GridLayout.Dash li {
+    position: relative;
+    background-size: 64px !important;
+    background-position: center 16px;
+    padding: calc(var(--AdnMgrIconBgSize) + 24px) 8px 16px 8px;
+    margin: 0 0 30px;
+}
+
+.GridLayout.Dash li:hover {
+    filter: grayscale(0%) !important;
+    opacity: 1 !important;
+    background-color: var(--AdnMgrColorCardHover);
+    border-color: transparent;
+    scale: 1.1;
+}
+
+.GridLayout.Dash li span {
+    position: absolute;
+    bottom: -28px;
+    left: 0;
+    max-width: 100px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    border-radius: var(--AdnMgrShapeSmall);
+    padding: 0 5px;
+    text-overflow: ellipsis;
+    color: var(--AdnMgrColorOnPrimary);
+    background: var(--AdnMgrColorCard);
+}
+
+
 .ListLayout {
     grid-template-columns: 1fr;
 }
@@ -386,7 +418,7 @@ h3 {
 
 /* M3 Sliders */
 input[type="range"] {
-    -webkit-appearance: none;
+    appearance: none;
     background: transparent;
     width: 200px;
 }
@@ -500,12 +532,12 @@ input[type="text"].SelectInput {
     opacity: 1;
 }
 
-.group-del {
-    background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
+.group-del svg {
+    fill: red;
 }
 
-.group-renam {
-    background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>');
+.group-renam svg {
+    fill: var(--AdnMgrColorPrimary);
 }
 
 .group-add-btn {
@@ -555,6 +587,20 @@ input[type="text"].SelectInput {
     color: var(--AdnMgrColorOnSurfaceVariant);
 }
 
+.InfoModal p a {
+    color: var(--AdnMgrColorOnSidebar);
+    font-weight: 600;
+    font-size: 14px;
+    background: var(--AdnMgrColorCard);
+    padding: 5px 10px;
+    border-radius: var(--AdnMgrShapePill);
+}
+
+.InfoModal p a:hover {
+    color: var(--AdnMgrColorCardHover);
+    background: var(--AdnMgrColorOnSidebar);
+}
+
 .InfoModal .BtnClose {
     background: var(--AdnMgrColorPrimary);
     color: var(--AdnMgrColorOnPrimary);
@@ -583,22 +629,6 @@ input[type="text"].SelectInput {
     text-align: center;
     box-shadow: none;
     border: 1px solid var(--AdnMgrColorSurfaceVariant);
-}
-
-.BtnReset {
-    background: var(--AdnMgrColorError);
-    color: var(--AdnMgrColorOnPrimary);
-    border: none;
-    padding: 8px 16px;
-    border-radius: var(--AdnMgrShapePill);
-    cursor: pointer;
-    font-weight: 500;
-    transition: var(--AdnMgrTransitionStandard);
-}
-
-.BtnReset:hover {
-    box-shadow: var(--AdnMgrElevation1);
-    opacity: 0.9;
 }
 
 ::-webkit-scrollbar {
