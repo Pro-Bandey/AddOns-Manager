@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             li.innerHTML = `
                 ${isDev && AppState.ShowDevBadge ? '<i>DEV</i>' : ''}
-                ${isInProfile ? '<span style="position:absolute; bottom:4px; right:4px; width:12px; height:12px; background-color:var(--AdnMgrColorPrimary); border-radius:50%; border:2px solid var(--AdnMgrColorCard); z-index:2; box-shadow:0 1px 2px rgba(0,0,0,0.3);"></span>' : ''}
+                ${isInProfile ? '<span style="position:absolute;left: 0px;top: 0px;width: 15px;height: 15px;background-color: var(--AdnMgrColorPrimaryContainer);border-radius:50%;border:2px solid var(--AdnMgrColorCard);z-index:2;box-shadow:0 1px 2px rgba(0,0,0,0.3);"></span>' : ''}
                 <span>${name}</span>
             `;
 
