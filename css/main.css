@@ -363,7 +363,7 @@ h3 {
 .IosToggle {
     position: relative;
     display: inline-block;
-    width: 52px;
+    width: 54px;
     height: 32px;
     border-radius: var(--AdnMgrShapePill);
 }
