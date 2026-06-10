@@ -68,7 +68,6 @@ body {
     }
 }
 
-/* M3 List Item / Row */
 .SettingsRow {
     display: flex;
     align-items: center;
@@ -84,4 +83,23 @@ body {
 
 .SettingsRow:hover {
     background: var(--AdnMgrColorSurfaceContainerHighest);
+}
+
+.SettingsRow div button[id="BtnExport"] {
+    width: auto;
+    cursor: pointer;
+    background: var(--AdnMgrColorPrimary);
+    color: var(--AdnMgrColorOnPrimary);
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.SettingsRow div button[id="BtnImport"] {
+    width: auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }

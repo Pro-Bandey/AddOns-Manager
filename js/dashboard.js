@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         Object.keys(AppState.Groups).forEach(group => {
             const li = document.createElement('li');
             if (group === ActiveGroup) li.className = 'cur';
-            li.innerHTML = `${group} <i class="group-del"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></i><i class="group-renam"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M216-216h51l375-375-51-51-375 375v51Zm-72 72v-153l498-498q11-11 23.84-16 12.83-5 27-5 14.16 0 27.16 5t24 16l51 51q11 11 16 24t5 26.54q0 14.45-5.02 27.54T795-642L297-144H144Zm600-549-51-51 51 51Zm-127.95 76.95L591-642l51 51-25.95-25.05Z"/></svg></i>`;
+            li.innerHTML = `${group} <i class="group-del"><svg class="icon"><use href="icons/icons.svg#icon-delete"></use></svg></i><i class="group-renam"><svg class="icon"><use href="icons/icons.svg#icon-pen"></use></svg></i>`;
 
             li.querySelector('.group-del').addEventListener('click', (e) => {
                 e.stopPropagation();

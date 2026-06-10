@@ -82,6 +82,12 @@ h3 {
     font-size: 16px;
 }
 
+.icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
 /* ---------------- POPUP SPECIFIC ---------------- */
 #mainBox {
     padding: 0 16px 16px;
