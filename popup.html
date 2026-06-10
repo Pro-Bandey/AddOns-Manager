@@ -21,8 +21,15 @@
                 <option value="LightMode">Light</option>
                 <option value="DarkMode">Dark</option>
             </select>
-            <button id="BtnDashboard" class="BtnDash">
-                <svg class="icon"><use href="icons/icons.svg#icon-settings"></use></svg>
+            <button id="BtnMulti" class="BtnDash" title="Toggle Multi-Select Mode">
+                <svg class="icon">
+                    <use href="icons/icons.svg#icon-check"></use>
+                </svg>
+            </button>
+            <button id="BtnDashboard" class="BtnDash" title="Dashboard Settings">
+                <svg class="icon">
+                    <use href="icons/icons.svg#icon-settings"></use>
+                </svg>
             </button>
         </div>
         <hr>
@@ -31,6 +38,19 @@
             <hr>Disabled Exts
         </div>
         <ul id="BoxInActives" class="BoxInActives"></ul>
+    </div>
+
+    <!-- Batch Actions Footer Bar -->
+    <div id="BatchBar" class="BatchBar">
+        <span id="BatchCount">0 selected</span>
+        <div class="BatchButtons">
+            <button id="BtnBatchEnable" class="SelectInput BatchActionBtn">Enable</button>
+            <button id="BtnBatchDisable" class="SelectInput BatchActionBtn">Disable</button>
+            <button id="BtnBatchUninstall" class="SelectInput BatchActionBtn">Uninstall</button>
+            <select id="BatchProfileSelect" class="SelectInput">
+                <option value="">Add to profile...</option>
+            </select>
+        </div>
     </div>
 
     <div id="rightClickMenu" class="showMenu">

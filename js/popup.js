@@ -5,10 +5,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const BoxInActives = document.getElementById('BoxInActives');
     const Search = document.getElementById('SearchInput');
     const ProfileSelect = document.getElementById('ProfileSelect');
+    
+    // Multi-select elements
+    const BtnMulti = document.getElementById('BtnMulti');
+    const BatchBar = document.getElementById('BatchBar');
+    const BatchCount = document.getElementById('BatchCount');
+    const BatchProfileSelect = document.getElementById('BatchProfileSelect');
 
     const LayoutSel = document.getElementById('LayoutSelect');
     const ThemeSel = document.getElementById('ThemeSelect');
     
+    let isMultiMode = false;
+    let selectedExts = new Set();
+    let ContextExtId = null;
+
     if (!AppState.ShowThemeToggle && ThemeSel) ThemeSel.style.display = 'none';
     if (!AppState.ShowLayoutToggle && LayoutSel) LayoutSel.style.display = 'none';
 
@@ -16,20 +26,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     LayoutSel.value = AppState.Layout;
     ThemeSel.value = AppState.Theme;
 
-    // Load the Profiles into the Dropdown
+    // Load Profiles into Dropdowns
     Object.keys(AppState.Groups).forEach(g => {
-        const opt = document.createElement('option'); opt.value = g; opt.innerText = g;
-        ProfileSelect.appendChild(opt);
+        ProfileSelect.appendChild(new Option(g, g));
+        BatchProfileSelect.appendChild(new Option(g, g));
     });
 
-    // Remember the last selected profile from Storage
     if (AppState.PopupSelectedProfile && AppState.Groups[AppState.PopupSelectedProfile]) {
         ProfileSelect.value = AppState.PopupSelectedProfile;
     } else {
         ProfileSelect.value = "";
     }
 
-    let ContextExtId = null;
+    // Toggle Multi-Select Mode
+    BtnMulti.addEventListener('click', () => {
+        isMultiMode = !isMultiMode;
+        BtnMulti.classList.toggle('ActiveMode', isMultiMode);
+        BatchBar.classList.toggle('IsVisible', isMultiMode);
+        if (!isMultiMode) {
+            selectedExts.clear();
+            Render();
+        }
+    });
+
+    function UpdateBatchUI() {
+        BatchCount.innerText = `${selectedExts.size} selected`;
+    }
 
     async function Render() {
         ApplyThemeAndLayout(AppState);
@@ -57,6 +79,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             li.dataset.id = ext.id;
             li.style.backgroundImage = `url("${iconUrl}")`;
             
+            if (selectedExts.has(ext.id)) li.classList.add('SelectedForBatch');
+
             li.innerHTML = `
                 ${isDev && AppState.ShowDevBadge ? '<i>DEV</i>' : ''}
                 ${isInProfile ? '<span style="position:absolute;left: 0px;top: 0px;width: 15px;height: 15px;background-color: var(--AdnMgrColorPrimaryContainer);border-radius:50%;border:2px solid var(--AdnMgrColorCard);z-index:2;box-shadow:0 1px 2px rgba(0,0,0,0.3);"></span>' : ''}
@@ -64,10 +88,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
 
             li.addEventListener('click', () => {
-                chrome.management.setEnabled(ext.id, !ext.enabled, Render);
+                if (isMultiMode) {
+                    if (selectedExts.has(ext.id)) selectedExts.delete(ext.id);
+                    else selectedExts.add(ext.id);
+                    li.classList.toggle('SelectedForBatch');
+                    UpdateBatchUI();
+                } else {
+                    chrome.management.setEnabled(ext.id, !ext.enabled, Render);
+                }
             });
 
             li.addEventListener('contextmenu', async (e) => {
+                if (isMultiMode) return;
                 e.preventDefault();
                 ContextExtId = ext;
 
@@ -77,10 +109,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 menu.classList.add('IsVisible');
 
                 const color = await GetDominantColor(iconUrl);
-                const rgb = `rgb(${color.r}, ${color.g}, ${color.b})`;
                 document.getElementById('ctxName').innerText = name;
-                document.getElementById('ctxName').style.background = rgb;
-                menu.querySelectorAll('li').forEach(el => el.style.background = rgb);
+                document.getElementById('ctxName').style.background = `rgb(${color.r}, ${color.g}, ${color.b})`;
+                menu.querySelectorAll('li').forEach(el => el.style.background = `rgb(${color.r}, ${color.g}, ${color.b})`);
 
                 const ctxLock = document.getElementById('ctxLock');
                 if (ProfileSelect.value) {
@@ -99,8 +130,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             else BoxInActives.appendChild(li);
         }
         document.getElementById('DisableHeader').style.display = BoxInActives.innerHTML ? 'block' : 'none';
+        UpdateBatchUI();
     }
 
+    // Context Menu Handlers
     document.addEventListener('click', () => document.getElementById('rightClickMenu').classList.remove('IsVisible'));
     document.getElementById('ctxOptions').addEventListener('click', () => { if (ContextExtId.optionsUrl) chrome.tabs.create({ url: ContextExtId.optionsUrl }); });
     document.getElementById('ctxHomepage').addEventListener('click', () => { if (ContextExtId.homepageUrl) chrome.tabs.create({ url: ContextExtId.homepageUrl }); });
@@ -108,7 +141,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('ctxReload').addEventListener('click', () => {
         chrome.management.setEnabled(ContextExtId.id, false, () => chrome.management.setEnabled(ContextExtId.id, true, Render));
     });
-    
     document.getElementById('ctxLock').addEventListener('click', () => {
         const grp = AppState.Groups[ProfileSelect.value];
         if (grp.includes(ContextExtId.id)) grp.splice(grp.indexOf(ContextExtId.id), 1);
@@ -116,38 +148,59 @@ document.addEventListener('DOMContentLoaded', async () => {
         SaveAppState(AppState); Render();
     });
 
-    Search.addEventListener('input', Render);
+    // Batch Action Handlers
+    document.getElementById('BtnBatchEnable').addEventListener('click', async () => {
+        const promises = Array.from(selectedExts).map(id => new Promise(r => chrome.management.setEnabled(id, true, () => { chrome.runtime.lastError; r(); })));
+        await Promise.all(promises); Render();
+    });
     
-    // --- FIXED: Instantly Enable/Disable extensions based on selected profile ---
+    document.getElementById('BtnBatchDisable').addEventListener('click', async () => {
+        const promises = Array.from(selectedExts).map(id => new Promise(r => chrome.management.setEnabled(id, false, () => { chrome.runtime.lastError; r(); })));
+        await Promise.all(promises); Render();
+    });
+
+    document.getElementById('BtnBatchUninstall').addEventListener('click', async () => {
+        if(confirm("Uninstalling multiple extensions will trigger Chrome's native confirmation dialog for each one. Proceed?")) {
+            for (const id of selectedExts) {
+                await new Promise(r => chrome.management.uninstall(id, { showConfirmDialog: true }, () => { chrome.runtime.lastError; r(); }));
+            }
+            selectedExts.clear(); Render();
+        }
+    });
+
+    BatchProfileSelect.addEventListener('change', (e) => {
+        const grpName = e.target.value;
+        if (grpName && AppState.Groups[grpName]) {
+            selectedExts.forEach(id => {
+                if (!AppState.Groups[grpName].includes(id)) AppState.Groups[grpName].push(id);
+            });
+            SaveAppState(AppState);
+            e.target.value = ""; // Reset dropdown
+            alert(`Added ${selectedExts.size} extensions to ${grpName}`);
+            Render();
+        }
+    });
+
+    Search.addEventListener('input', Render);
     ProfileSelect.addEventListener('change', async (e) => { 
         const selectedProfile = e.target.value;
         AppState.PopupSelectedProfile = selectedProfile; 
         SaveAppState(AppState); 
 
-        // If a specific profile is selected, update Chrome extensions
         if (selectedProfile && AppState.Groups[selectedProfile]) {
             const profileExtIds = AppState.Groups[selectedProfile];
             const exts = await GetExtensions();
-
-            // Create a batch of promises to switch extensions synchronously
             const promises = exts.map(ext => {
                 const shouldBeEnabled = profileExtIds.includes(ext.id);
-                // Only ask Chrome to toggle if the state needs to change
                 if (ext.enabled !== shouldBeEnabled) {
                     return new Promise(res => {
-                        chrome.management.setEnabled(ext.id, shouldBeEnabled, () => {
-                            if(chrome.runtime.lastError) { /* Ignore extensions we can't control */ }
-                            res();
-                        });
+                        chrome.management.setEnabled(ext.id, shouldBeEnabled, () => { chrome.runtime.lastError; res(); });
                     });
                 }
                 return Promise.resolve();
             });
-
-            // Wait for all toggles to finish, then render
             await Promise.all(promises);
         }
-
         Render(); 
     });
 

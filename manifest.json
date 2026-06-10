@@ -26,7 +26,7 @@
     "default_popup": "popup.html"
   },
 
-  "permissions": ["management", "storage", "tabs"],
+  "permissions": ["management", "storage", "tabs", "alarms"],
 
   "host_permissions": ["<all_urls>"],
 

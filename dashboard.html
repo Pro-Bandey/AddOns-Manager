@@ -11,23 +11,42 @@
     <div class="Sidebar">
         <div class="SidebarItem IsActive" data-tab="TabGen">
             <svg class="icon">
-               <use href="icons/icons.svg#icon-settings"></use>
+                <use href="icons/icons.svg#icon-settings"></use>
             </svg>
-            General Settings
+            General Configs
         </div>
         <div class="SidebarItem" data-tab="TabGrp">
             <svg class="icon">
-               <use href="icons/icons.svg#icon-folder"></use>
+                <use href="icons/icons.svg#icon-folder"></use>
             </svg>
-            Grouping / Profiling
+            Profiles / Groups
+        </div>
+        <div class="SidebarItem" data-tab="TabRules">
+            <svg class="icon">
+                <use href="icons/icons.svg#icon-link"></use>
+            </svg>
+            Site Rules
+        </div>
+        <div class="SidebarItem" data-tab="TabSched">
+            <svg class="icon">
+                <use href="icons/icons.svg#icon-clock"></use>
+            </svg>
+            Schedules
+        </div>
+        <div class="SidebarItem" data-tab="TabRisk">
+            <svg class="icon">
+                <use href="icons/icons.svg#icon-shield"></use>
+            </svg>
+            Security View
         </div>
         <div class="SidebarItem" data-tab="TabName">
             <svg class="icon">
-               <use href="icons/icons.svg#icon-pen"></use>
+                <use href="icons/icons.svg#icon-pen"></use>
             </svg>
-            Name & Edit
+            Name Edit
         </div>
     </div>
+
     <div class="MainContent">
         <div id="TabGen" class="TabPanel IsVisible">
             <h2>General</h2>
@@ -47,8 +66,8 @@
                     </label>
                     <label class="CircRadio">
                         <input type="radio" name="Theme" value="DarkMode" />
-                            <span class="RadioCircle"></span>
-                            Dark
+                        <span class="RadioCircle"></span>
+                        Dark
                     </label>
                 </div>
             </div>
@@ -73,7 +92,7 @@
                 </div>
             </div>
             <div class="SettingsRow">
-                <span>Grid Columns (5 to 10): <span id="ColVal">5</span></span>
+                <span>Grid Columns (4 to 7): <span id="ColVal">5</span></span>
                 <input type="range" id="GridColumns" min="4" max="7" />
             </div>
             <div class="SettingsRow">
@@ -105,7 +124,9 @@
                         Import
                     </button>
                     <button id="BtnExport" class="SelectInput">
-                        <svg class="icon"><use href="icons/icons.svg#icon-upload"></use></svg>
+                        <svg class="icon">
+                            <use href="icons/icons.svg#icon-upload"></use>
+                        </svg>
                         Export
                     </button>
                 </div>
@@ -119,12 +140,103 @@
             <div id="GroupGrid" class="FixedGrid9 BoxActives GridLayout Dash"></div>
         </div>
 
+        <div id="TabRules" class="TabPanel">
+            <h2>Site-Based Auto Toggle Rules</h2>
+            <p class="TabSubhead">Automatically enable or disable extensions based on the current website domain.</p>
+            <br>
+            <div class="SettingsCard">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <input type="text" id="RuleDomain" class="SelectInput" placeholder="e.g., github.com"
+                        style="flex: 2; min-width: 150px;" />
+                    <select id="RuleExtSelect" class="SelectInput" style="flex: 2; min-width: 180px;"></select>
+                    <select id="RuleActionSelect" class="SelectInput" style="flex: 1; min-width: 100px;">
+                        <option value="enable">Enable</option>
+                        <option value="disable">Disable</option>
+                    </select>
+                    <button id="BtnAddRule" class="SelectInput PrimaryBtn">Add Rule</button>
+                </div>
+            </div>
+            <br>
+            <h3>Configured Rules</h3>
+            <ul id="RulesList" class="RuleList"></ul>
+        </div>
+
+        <div id="TabSched" class="TabPanel">
+            <h2>Time-Based Scheduling</h2>
+            <p class="TabSubhead">Configure recurring time plans to enable/disable extensions or profiles automatically.
+            </p>
+            <br>
+            <div class="SettingsCard">
+                <div class="SettingsFormRow">
+                    <select id="SchedType" class="SelectInput">
+                        <option value="extension">Individual Extension</option>
+                        <option value="profile">Profile (Group)</option>
+                    </select>
+                    <select id="SchedTarget" class="SelectInput" style="flex-grow: 1;"></select>
+                    <select id="SchedAction" class="SelectInput">
+                        <option value="enable">Enable</option>
+                        <option value="disable">Disable</option>
+                    </select>
+                    <input type="time" id="SchedTime" class="SelectInput" />
+                </div>
+                <div class="DaysSelector">
+                    <span style="font-weight: 500;">Repeat Days:</span>
+                    <div class="CheckboxRow">
+                        <label class="CheckedLabel"><input type="checkbox" name="SchedDay" value="1" /> Mon</label>
+                        <label class="CheckedLabel"><input type="checkbox" name="SchedDay" value="2" /> Tue</label>
+                        <label class="CheckedLabel"><input type="checkbox" name="SchedDay" value="3" /> Wed</label>
+                        <label class="CheckedLabel"><input type="checkbox" name="SchedDay" value="4" /> Thu</label>
+                        <label class="CheckedLabel"><input type="checkbox" name="SchedDay" value="5" /> Fri</label>
+                        <label class="CheckedLabel"><input type="checkbox" name="SchedDay" value="6" /> Sat</label>
+                        <label class="CheckedLabel"><input type="checkbox" name="SchedDay" value="0" /> Sun</label>
+                    </div>
+                </div>
+                <div class="DateSelector" style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
+                    <span style="font-weight: 500;">Or Specific Dates (1-31, comma separated):</span>
+                    <input type="text" id="SchedDates" class="SelectInput" placeholder="e.g., 1, 15, 30"
+                        style="max-width: 180px;" />
+                </div>
+                <div style="margin-top: 16px;">
+                    <button id="BtnAddSched" class="SelectInput PrimaryBtn">Add Schedule Rule</button>
+                </div>
+            </div>
+            <br>
+            <h3>Active Schedules</h3>
+            <ul id="SchedsList" class="RuleList"></ul>
+        </div>
+
+        <!-- NEW SECURITY AUDIT PANEL -->
+        <div id="TabRisk" class="TabPanel">
+            <h2>Security & Risk Assessor</h2>
+            <p class="TabSubhead">Scan extension permissions to detect structural capabilities and potential data access
+                issues.</p>
+            <br>
+            <div class="RiskStats">
+                <div class="RiskStatCard High">
+                    <span class="Count" id="RiskCountHigh">0</span>
+                    <span class="Label">High Risk</span>
+                </div>
+                <div class="RiskStatCard Med">
+                    <span class="Count" id="RiskCountMed">0</span>
+                    <span class="Label">Medium Risk</span>
+                </div>
+                <div class="RiskStatCard Low">
+                    <span class="Count" id="RiskCountLow">0</span>
+                    <span class="Label">Low Risk</span>
+                </div>
+            </div>
+            <br>
+            <h3>Extension Risk Breakdown</h3>
+            <div id="RiskGrid" class="RiskAuditGrid"></div>
+        </div>
+
         <div id="TabName" class="TabPanel">
             <h2>Edit Extensions</h2>
             <br>
             <div id="NameGrid" class="FixedGrid4"></div>
         </div>
     </div>
+
 
     <div class="InfoModalBackdrop" id="InfoModal">
         <div class="InfoModal">
@@ -136,8 +248,34 @@
             <button class="BtnClose" id="BtnCloseInfoModal">Close</button>
         </div>
     </div>
+    <div class="NameInputModalBackdrop" id="NameInputModal">
+        <div class="NameModal">
+            <label for="groupName">Add New Name:</label>
+            <input type="text" id="groupName" placeholder="Type Name e.g:Dev, Social" class="NameInpute">
+            <button class="Btn Danger" id="BtnNoNameInputModal">No</button>
+            <button class="Btn" id="BtnOkNameInputModal">Ok</button>
+        </div>
+    </div>
+
+    <div class="ConfirmModalBackdrop" id="ConfirmModal">
+        <div class="ConfirmModal">
+            <h3>Warning:</h3>
+            <span id="ConfirmModalText">Confirm Text Here</span>
+            <button class="Btn" id="BtnNoConfirmModal">No</button>
+            <button class="Btn Danger" id="BtnOkConfirmModal">Ok</button>
+        </div>
+    </div>
     
+    <div class="AlertModalBackdrop" id="AlertModal">
+        <div class="ConfirmModal">
+            <h3>Alert:</h3>
+            <span id="AlertModalText">Alert Text Here</span>
+            <button class="Btn" id="BtnOkAlertModal">Ok</button>
+        </div>
+    </div>
+
 </body>
-    <script src="js/sharedUtils.js"></script>
-    <script src="js/dashboard.js"></script>
+<script src="js/sharedUtils.js"></script>
+<script src="js/dashboard.js"></script>
+
 </html>

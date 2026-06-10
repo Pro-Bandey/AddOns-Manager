@@ -8,7 +8,9 @@ const DefaultState = {
     ShowLayoutToggle: true,
     PopupSelectedProfile: '',
     Groups: { "My Profile": [] },
-    CustomInfo: {}
+    CustomInfo: {},
+    SiteRules: [], // { id, domain, extId, action }
+    Schedules: []  // { id, type, target, action, time, days, dates }
 };
 
 async function LoadAppState() {
@@ -84,9 +86,20 @@ function ApplyThemeAndLayout(state) {
     } else {
         document.body.className = state.Theme;
     }
-
-    // Fixed CSS Property Variables so the sliders work correctly
     document.documentElement.style.setProperty('--AdnMgrGridColumns', state.GridColumns);
     const sizeMap = { 'small': '32px', 'normal': '48px', 'large': '64px' };
     document.documentElement.style.setProperty('--AdnMgrIconBgSize', sizeMap[state.IconSize] || '44px');
+}
+
+// Security Audit Logic
+function AssessRisk(permissions = [], hostPermissions = []) {
+    const HighRisk = ['debugger', 'declarativeNetRequest', 'webRequest', 'downloads', 'proxy'];
+    const MedRisk = ['tabs', 'cookies', 'history', 'bookmarks', 'clipboardRead', 'management', 'geolocation'];
+    
+    let isHigh = hostPermissions.some(h => h.includes('<all_urls>') || h.includes('*://*/*')) || permissions.some(p => HighRisk.includes(p));
+    let isMed = permissions.some(p => MedRisk.includes(p));
+
+    if (isHigh) return 'High';
+    if (isMed) return 'Medium';
+    return 'Low';
 }
