@@ -113,6 +113,15 @@ h3 {
     box-shadow: var(--AdnMgrElevation1);
 }
 
+#mainBox li svg.pin {
+    width: 20px;
+    height: 20px;
+    fill: var(--AdnMgrColorError);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .DisableText {
     font-size: 12px;
     color: var(--AdnMgrColorOnSurfaceVariant);
@@ -148,8 +157,9 @@ h3 {
 }
 
 .BoxActives li:hover {
-    background-color: var(--AdnMgrColorCardHover);
+    background-color: var(--AdnMgrColorOnPrimaryContainer);
     box-shadow: var(--AdnMgrElevation1);
+    scale: 1.05;
 }
 
 .BoxActives li:active {
@@ -163,7 +173,6 @@ h3 {
     border-color: transparent;
 }
 
-/* Multi-Select / Visual Item Check State */
 .BoxActives li.SelectedForBatch,
 .BoxInActives li.SelectedForBatch {
     border-color: var(--AdnMgrColorPrimary) !important;
@@ -280,6 +289,15 @@ h3 {
     background-color: transparent;
     border: 1px solid var(--AdnMgrColorSurfaceVariant);
 }
+
+#mainBox .BoxInActives li span {
+    color: var(--AdnMgrColorCardHover);
+}
+
+#mainBox .BoxInActives li:hover span {
+    color: var(--AdnMgrColorOnPrimary);
+}
+
 
 /* ---------------- RIGHT CLICK MENU (M3 Menu) ---------------- */
 .showMenu {
