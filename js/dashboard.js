@@ -2,6 +2,103 @@ document.addEventListener('DOMContentLoaded', async () => {
     let AppState = await LoadAppState();
     let ActiveGroup = Object.keys(AppState.Groups)[0];
 
+    // ------------ CUSTOM DIALOG PROMISE HELPERS ------------
+
+    /**
+     * Replaces standard window.alert with custom #AlertModal
+     */
+    function showAlert(message) {
+        return new Promise(resolve => {
+            const modal = document.getElementById('AlertModal');
+            const text = document.getElementById('AlertModalText');
+            const btnOk = document.getElementById('BtnOkAlertModal');
+
+            text.innerText = message;
+            modal.classList.add('IsVisible');
+
+            const handleOk = () => {
+                modal.classList.remove('IsVisible');
+                btnOk.removeEventListener('click', handleOk);
+                resolve();
+            };
+            btnOk.addEventListener('click', handleOk);
+        });
+    }
+
+    /**
+     * Replaces standard window.confirm with custom #ConfirmModal
+     */
+    function showConfirm(message) {
+        return new Promise(resolve => {
+            const modal = document.getElementById('ConfirmModal');
+            const text = document.getElementById('ConfirmModalText');
+            const btnNo = document.getElementById('BtnNoConfirmModal');
+            const btnOk = document.getElementById('BtnOkConfirmModal');
+
+            text.innerText = message;
+            modal.classList.add('IsVisible');
+
+            const handleNo = () => {
+                modal.classList.remove('IsVisible');
+                cleanup();
+                resolve(false);
+            };
+
+            const handleOk = () => {
+                modal.classList.remove('IsVisible');
+                cleanup();
+                resolve(true);
+            };
+
+            function cleanup() {
+                btnNo.removeEventListener('click', handleNo);
+                btnOk.removeEventListener('click', handleOk);
+            }
+
+            btnNo.addEventListener('click', handleNo);
+            btnOk.addEventListener('click', handleOk);
+        });
+    }
+
+    /**
+     * Replaces standard window.prompt with custom #NameInputModal
+     */
+    function showPrompt(title, defaultValue = '') {
+        return new Promise(resolve => {
+            const modal = document.getElementById('NameInputModal');
+            const label = modal.querySelector('span');
+            const input = document.getElementById('groupName');
+            const btnNo = document.getElementById('BtnNoNameInputModal');
+            const btnOk = document.getElementById('BtnOkNameInputModal');
+
+            label.innerText = title;
+            input.value = defaultValue;
+            modal.classList.add('IsVisible');
+            input.focus();
+
+            const handleNo = () => {
+                modal.classList.remove('IsVisible');
+                cleanup();
+                resolve(null);
+            };
+
+            const handleOk = () => {
+                const value = input.value.trim();
+                modal.classList.remove('IsVisible');
+                cleanup();
+                resolve(value);
+            };
+
+            function cleanup() {
+                btnNo.removeEventListener('click', handleNo);
+                btnOk.removeEventListener('click', handleOk);
+            }
+
+            btnNo.addEventListener('click', handleNo);
+            btnOk.addEventListener('click', handleOk);
+        });
+    }
+
     // Navigation Drawer Setup
     document.querySelectorAll('.SidebarItem').forEach(item => {
         item.addEventListener('click', () => {
@@ -59,15 +156,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const importedState = JSON.parse(event.target.result);
                 AppState = { ...AppState, ...importedState };
                 await SaveAppState(AppState);
-                alert("Settings imported successfully!");
+                await showAlert("Settings imported successfully!");
                 location.reload();
             } catch (err) {
-                alert("Invalid backup file!");
+                await showAlert("Invalid backup file format!");
             }
         };
         reader.readAsText(file);
     });
-
 
     // ------------ PROFILES RENDERER ------------
     async function RenderGroups() {
@@ -77,24 +173,43 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (group === ActiveGroup) li.className = 'cur';
             li.innerHTML = `${group} <i class="group-del"><svg class="icon"><use href="icons/icons.svg#icon-delete"></use></svg></i><i class="group-renam"><svg class="icon"><use href="icons/icons.svg#icon-pen"></use></svg></i>`;
 
-            li.querySelector('.group-del').addEventListener('click', (e) => {
+            li.querySelector('.group-del').addEventListener('click', async (e) => {
                 e.stopPropagation();
-                if (confirm(`Delete profile ${group}?`)) { delete AppState.Groups[group]; ActiveGroup = Object.keys(AppState.Groups)[0] || null; SaveAppState(AppState); RenderGroups(); }
+                const confirmDelete = await showConfirm(`Delete profile: ${group}?`);
+                if (confirmDelete) {
+                    delete AppState.Groups[group];
+                    ActiveGroup = Object.keys(AppState.Groups)[0] || null;
+                    SaveAppState(AppState);
+                    RenderGroups();
+                }
             });
-            li.querySelector('.group-renam').addEventListener('click', (e) => {
+            li.querySelector('.group-renam').addEventListener('click', async (e) => {
                 e.stopPropagation();
-                const newName = prompt('New Name:', group);
+                const newName = await showPrompt('Rename Profile:', group);
                 if (newName && newName !== group && !AppState.Groups[newName]) {
                     AppState.Groups[newName] = AppState.Groups[group];
-                    delete AppState.Groups[group]; if (ActiveGroup === group) ActiveGroup = newName; SaveAppState(AppState); RenderGroups();
+                    delete AppState.Groups[group];
+                    if (ActiveGroup === group) ActiveGroup = newName;
+                    SaveAppState(AppState);
+                    RenderGroups();
                 }
             });
             li.addEventListener('click', () => { ActiveGroup = group; RenderGroups(); });
             tabs.appendChild(li);
         });
 
-        const addBtn = document.createElement('li'); addBtn.className = 'group-add-btn'; addBtn.innerText = '+';
-        addBtn.addEventListener('click', () => { const n = prompt('Profile Name:'); if (n && !AppState.Groups[n]) { AppState.Groups[n] = []; ActiveGroup = n; SaveAppState(AppState); RenderGroups(); } });
+        const addBtn = document.createElement('li');
+        addBtn.className = 'group-add-btn';
+        addBtn.innerHTML = `<svg class="icon"><use href="icons/icons.svg#icon-add"></use></svg>`;
+        addBtn.addEventListener('click', async () => {
+            const n = await showPrompt('Add New Profile Name:');
+            if (n && !AppState.Groups[n]) {
+                AppState.Groups[n] = [];
+                ActiveGroup = n;
+                SaveAppState(AppState);
+                RenderGroups();
+            }
+        });
         tabs.appendChild(addBtn);
 
         const grid = document.getElementById('GroupGrid'); grid.innerHTML = '';
@@ -151,18 +266,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ------------ SITE RULES RENDERER ------------
     async function RenderSiteRules() {
         const exts = await GetExtensions();
-        const sel = document.getElementById('RuleExtSelect');
-        sel.innerHTML = '';
-        exts.forEach(e => sel.appendChild(new Option(e.name, e.id)));
+        const typeSel = document.getElementById('RuleType');
+        const targetSel = document.getElementById('RuleTarget');
+
+        function populateTargets() {
+            targetSel.innerHTML = '';
+            if (typeSel.value === 'extension') {
+                exts.forEach(e => targetSel.appendChild(new Option(e.name, e.id)));
+            } else {
+                Object.keys(AppState.Groups).forEach(g => targetSel.appendChild(new Option(g, g)));
+            }
+        }
+
+        typeSel.removeEventListener('change', populateTargets);
+        typeSel.addEventListener('change', populateTargets);
+        if (targetSel.options.length === 0) populateTargets();
 
         const list = document.getElementById('RulesList'); list.innerHTML = '';
         if (!AppState.SiteRules) AppState.SiteRules = [];
 
         AppState.SiteRules.forEach(rule => {
-            const extName = exts.find(e => e.id === rule.extId)?.name || 'Unknown Ext';
+            const targetName = (rule.type === 'profile' || !rule.extId)
+                ? `Profile: ${rule.target}`
+                : (exts.find(e => e.id === rule.extId)?.name || 'Unknown Extension');
+
             const li = document.createElement('li');
             li.innerHTML = `
-                <div class="InfoText">On <b>${rule.domain}</b> &rarr; <span style="color:${rule.action==='enable'?'var(--AdnMgrColorSuccess)':'var(--AdnMgrColorError)'}">${rule.action.toUpperCase()}</span> <b>${extName}</b></div>
+                <div class="InfoText">On <b>${rule.domain}</b> &rarr; <span style="color:${rule.action === 'enable' ? 'var(--AdnMgrColorSuccess)' : 'var(--AdnMgrColorError)'}">${rule.action.toUpperCase()}</span> <b>${targetName}</b></div>
                 <button title="Remove Rule"><svg class="icon"><use href="icons/icons.svg#icon-delete"></use></svg></button>
             `;
             li.querySelector('button').addEventListener('click', () => {
@@ -173,15 +303,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    document.getElementById('BtnAddRule').addEventListener('click', () => {
+    document.getElementById('BtnAddRule').addEventListener('click', async () => {
         const domain = document.getElementById('RuleDomain').value.trim();
-        const extId = document.getElementById('RuleExtSelect').value;
-        const action = document.getElementById('RuleActionSelect').value;
-        if (domain && extId) {
-            AppState.SiteRules.push({ id: Date.now().toString(), domain, extId, action });
+        const type = document.getElementById('RuleType').value;
+        const target = document.getElementById('RuleTarget').value;
+        const action = document.getElementById('RuleAction').value;
+
+        if (domain && target) {
+            AppState.SiteRules.push({
+                id: Date.now().toString(),
+                domain: domain,
+                type: type,
+                target: target,
+                extId: type === 'extension' ? target : null,
+                action: action
+            });
             SaveAppState(AppState); RenderSiteRules();
             document.getElementById('RuleDomain').value = '';
-        } else { alert("Domain is required"); }
+        } else {
+            await showAlert("Domain and Target selections are required");
+        }
     });
 
     // ------------ SCHEDULES RENDERER ------------
@@ -189,7 +330,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const exts = await GetExtensions();
         const typeSel = document.getElementById('SchedType');
         const targetSel = document.getElementById('SchedTarget');
-        
+
         function populateTargets() {
             targetSel.innerHTML = '';
             if (typeSel.value === 'extension') {
@@ -200,14 +341,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         typeSel.removeEventListener('change', populateTargets);
         typeSel.addEventListener('change', populateTargets);
-        if(targetSel.options.length === 0) populateTargets();
+        if (targetSel.options.length === 0) populateTargets();
 
         const list = document.getElementById('SchedsList'); list.innerHTML = '';
         if (!AppState.Schedules) AppState.Schedules = [];
 
         AppState.Schedules.forEach(sched => {
             const targetName = sched.type === 'extension' ? (exts.find(e => e.id === sched.target)?.name || 'Unknown') : `Profile: ${sched.target}`;
-            const dayMap = {0:"Sun", 1:"Mon", 2:"Tue", 3:"Wed", 4:"Thu", 5:"Fri", 6:"Sat"};
+            const dayMap = { 0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat" };
             const daysStr = sched.days ? sched.days.map(d => dayMap[d]).join(', ') : '';
             const datesStr = sched.dates ? `Dates: ${sched.dates.join(', ')}` : '';
             const conds = [daysStr, datesStr].filter(Boolean).join(' | ');
@@ -215,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const li = document.createElement('li');
             li.innerHTML = `
                 <div class="InfoText">
-                    <b>${sched.time}</b> &rarr; <span style="color:${sched.action==='enable'?'var(--AdnMgrColorSuccess)':'var(--AdnMgrColorError)'}">${sched.action.toUpperCase()}</span> <b>${targetName}</b>
+                    <b>${sched.time}</b> &rarr; <span style="color:${sched.action === 'enable' ? 'var(--AdnMgrColorSuccess)' : 'var(--AdnMgrColorError)'}">${sched.action.toUpperCase()}</span> <b>${targetName}</b>
                     <div style="font-size:12px; color:var(--AdnMgrColorOnSurfaceVariant); margin-top:4px;">${conds}</div>
                 </div>
                 <button title="Remove Schedule"><svg class="icon"><use href="icons/icons.svg#icon-delete"></use></svg></button>
@@ -228,9 +369,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    document.getElementById('BtnAddSched').addEventListener('click', () => {
+    document.getElementById('BtnAddSched').addEventListener('click', async () => {
         const time = document.getElementById('SchedTime').value;
-        if (!time) return alert("Time is required!");
+        if (!time) {
+            await showAlert("Time configuration is required!");
+            return;
+        }
 
         const days = Array.from(document.querySelectorAll('input[name="SchedDay"]:checked')).map(cb => cb.value);
         const datesRaw = document.getElementById('SchedDates').value;
@@ -256,21 +400,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         let counts = { High: 0, Medium: 0, Low: 0 };
 
         exts.forEach(ext => {
-            const riskLevel = AssessRisk(ext.permissions, ext.hostPermissions);
-            counts[riskLevel]++;
+            const riskInfo = AssessRisk(ext.permissions, ext.hostPermissions);
+            counts[riskInfo.level]++;
 
-            const permissionsStr = [...(ext.permissions||[]), ...(ext.hostPermissions||[])].join(', ') || 'None';
+            const allPerms = [...(ext.permissions || []), ...(ext.hostPermissions || [])];
+            const permissionsBrief = allPerms.join(', ') || 'No explicit security permissions requested.';
+
+            let dropdownHtml = `<div class="RiskAuditDropdown" id="Dropdown_${ext.id}">`;
+            if (riskInfo.triggers.length > 0) {
+                dropdownHtml += `<strong>Identified Concerns:</strong><ul>`;
+                riskInfo.triggers.forEach(t => {
+                    dropdownHtml += `<li><span class="RiskBadge ${t.level.toLowerCase()}" style="font-size:9px; padding:2px 6px; min-width:auto;">${t.level}</span> <strong>${t.key}</strong>: ${t.desc}</li>`;
+                });
+                dropdownHtml += `</ul>`;
+            } else {
+                dropdownHtml += `<strong>Vulnerability Status:</strong> Clear. This extension uses default local sandbox protocols.`;
+            }
+            dropdownHtml += `</div>`;
 
             const row = document.createElement('div');
             row.className = 'RiskAuditRow';
             row.innerHTML = `
-                <img src="${GetBestIcon(ext.icons)}" />
-                <div class="RiskAuditDetails">
-                    <div class="RiskAuditName">${ext.name}</div>
-                    <div class="RiskAuditPermissions"><b>Access:</b> ${permissionsStr}</div>
+                <div class="RiskAuditHeader">
+                    <img src="${GetBestIcon(ext.icons)}" />
+                    <div class="RiskAuditDetails">
+                        <div class="RiskAuditName">${ext.name}</div>
+                        <div class="RiskAuditPermissions"><b>Scoping:</b> ${permissionsBrief}</div>
+                    </div>
+                    <div class="RiskBadge ${riskInfo.level.toLowerCase()}">${riskInfo.level}</div>
                 </div>
-                <div class="RiskBadge ${riskLevel.toLowerCase()}">${riskLevel}</div>
+                ${dropdownHtml}
             `;
+
+            row.addEventListener('click', () => {
+                const dropdown = row.querySelector('.RiskAuditDropdown');
+                if (dropdown) {
+                    dropdown.classList.toggle('IsOpen');
+                }
+            });
+
             grid.appendChild(row);
         });
 
@@ -280,7 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Init All Modules
-    RenderGroups(); 
+    RenderGroups();
     RenderNameEdit();
     RenderSiteRules();
     RenderSchedules();

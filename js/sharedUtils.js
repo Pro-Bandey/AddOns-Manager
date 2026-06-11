@@ -9,7 +9,7 @@ const DefaultState = {
     PopupSelectedProfile: '',
     Groups: { "My Profile": [] },
     CustomInfo: {},
-    SiteRules: [], // { id, domain, extId, action }
+    SiteRules: [], // { id, domain, type: 'extension'|'profile', target, action: 'enable'|'disable' }
     Schedules: []  // { id, type, target, action, time, days, dates }
 };
 
@@ -91,15 +91,57 @@ function ApplyThemeAndLayout(state) {
     document.documentElement.style.setProperty('--AdnMgrIconBgSize', sizeMap[state.IconSize] || '44px');
 }
 
-// Security Audit Logic
+// Granular Security Audit Definition
 function AssessRisk(permissions = [], hostPermissions = []) {
-    const HighRisk = ['debugger', 'declarativeNetRequest', 'webRequest', 'downloads', 'proxy'];
-    const MedRisk = ['tabs', 'cookies', 'history', 'bookmarks', 'clipboardRead', 'management', 'geolocation'];
-    
-    let isHigh = hostPermissions.some(h => h.includes('<all_urls>') || h.includes('*://*/*')) || permissions.some(p => HighRisk.includes(p));
-    let isMed = permissions.some(p => MedRisk.includes(p));
+    const highTokens = {
+        'debugger': 'Attaches to active browser execution streams to intercept/modify code execution flow.',
+        'declarativeNetRequest': 'Blocks, modifies, or redirects arbitrary web requests natively.',
+        'webRequest': 'Intercepts and reads incoming/outgoing network requests (sensitive headers, inputs, data).',
+        'downloads': 'Triggers background downloads to your local disk without explicit visual warning popups.',
+        'proxy': 'Routes browser internet activity through external servers, exposing raw data packets.'
+    };
+    const medTokens = {
+        'tabs': 'Accesses active browser tab structures, including full URLs and page titles.',
+        'cookies': 'Reads, changes, or steals authentication cookie credentials on any domains.',
+        'history': 'Accesses, searches, or removes browsing history logs.',
+        'bookmarks': 'Reads, appends, or edits system bookmarks.',
+        'clipboardRead': 'Accesses system clipboard entries, potentially exposing copied keys/passwords.',
+        'management': 'Enables, disables, or completely uninstalls neighboring extensions.',
+        'geolocation': 'Detects precise physical location.'
+    };
 
-    if (isHigh) return 'High';
-    if (isMed) return 'Medium';
-    return 'Low';
+    const triggers = [];
+    let level = 'Low';
+
+    permissions.forEach(p => {
+        if (highTokens[p]) {
+            triggers.push({ key: p, level: 'High', desc: highTokens[p] });
+        } else if (medTokens[p]) {
+            triggers.push({ key: p, level: 'Medium', desc: medTokens[p] });
+        }
+    });
+
+    // Check broad network scoping wildcard hosts
+    const broadHosts = hostPermissions.some(h => 
+        h.includes('<all_urls>') || 
+        h.includes('*://*/*') || 
+        h.includes('https://*/*') || 
+        h.includes('http://*/*')
+    );
+
+    if (broadHosts) {
+        triggers.push({ key: 'Broad Network Access', level: 'High', desc: 'Reads and modifies data structures on all websites you visit.' });
+    } else {
+        hostPermissions.forEach(hp => {
+            triggers.push({ key: hp, level: 'Medium', desc: `Can interact with context assets on ${hp}.` });
+        });
+    }
+
+    const hasHigh = triggers.some(t => t.level === 'High');
+    const hasMed = triggers.some(t => t.level === 'Medium');
+
+    if (hasHigh) level = 'High';
+    else if (hasMed) level = 'Medium';
+
+    return { level, triggers };
 }

@@ -1,11 +1,22 @@
 importScripts('sharedUtils.js');
 
-// 1. TIME-BASED SCHEDULING (Alarms API)
+// 1. SCHEDULER & TEMPORARY TIMER ENGINE
 chrome.runtime.onInstalled.addListener(() => {
     chrome.alarms.create("ScheduleCheck", { periodInMinutes: 1 });
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
+    // A. Handle Ephemeral Timers
+    if (alarm.name.startsWith("TempDisable_")) {
+        const extId = alarm.name.replace("TempDisable_", "");
+        chrome.management.setEnabled(extId, false, () => {
+            if (chrome.runtime.lastError) console.warn("Failed to auto-disable temporary extension:", extId);
+        });
+        chrome.alarms.clear(alarm.name);
+        return;
+    }
+
+    // B. Handle Recurring Schedules
     if (alarm.name === "ScheduleCheck") {
         const AppState = await LoadAppState();
         if (!AppState.Schedules || AppState.Schedules.length === 0) return;
@@ -16,7 +27,6 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
         const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
         AppState.Schedules.forEach(sched => {
-            // Check if Time matches
             if (sched.time === currentTime) {
                 const dayMatch = sched.days && sched.days.includes(currentDay);
                 const dateMatch = sched.dates && sched.dates.includes(currentDate);
@@ -28,7 +38,6 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
                             if (chrome.runtime.lastError) console.warn("Ext toggle failed");
                         });
                     } else if (sched.type === 'profile' && AppState.Groups[sched.target]) {
-                        // Toggle all extensions in the profile
                         AppState.Groups[sched.target].forEach(extId => {
                             chrome.management.setEnabled(extId, enable, () => chrome.runtime.lastError);
                         });
@@ -52,20 +61,34 @@ async function EvaluateSiteRules(url) {
     AppState.SiteRules.forEach(rule => {
         const isMatch = domain.includes(rule.domain);
         const shouldEnable = rule.action === 'enable' ? isMatch : !isMatch;
-        // If domain matches, apply action. If not, apply opposite.
         
-        chrome.management.get(rule.extId, (extInfo) => {
-            if (chrome.runtime.lastError) return;
-            if (extInfo.enabled !== shouldEnable) {
-                chrome.management.setEnabled(rule.extId, shouldEnable, () => chrome.runtime.lastError);
-            }
-        });
+        if (rule.type === 'extension' || !rule.type) {
+            // Target is an extension ID
+            const targetId = rule.extId || rule.target;
+            chrome.management.get(targetId, (extInfo) => {
+                if (chrome.runtime.lastError || !extInfo) return;
+                if (extInfo.enabled !== shouldEnable) {
+                    chrome.management.setEnabled(targetId, shouldEnable, () => chrome.runtime.lastError);
+                }
+            });
+        } else if (rule.type === 'profile' && AppState.Groups[rule.target]) {
+            // Target is a complete Profile Profile
+            const extList = AppState.Groups[rule.target];
+            extList.forEach(id => {
+                chrome.management.get(id, (extInfo) => {
+                    if (chrome.runtime.lastError || !extInfo) return;
+                    if (extInfo.enabled !== shouldEnable) {
+                        chrome.management.setEnabled(id, shouldEnable, () => chrome.runtime.lastError);
+                    }
+                });
+            });
+        }
     });
 }
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
     chrome.tabs.get(activeInfo.tabId, (tab) => {
-        if (!chrome.runtime.lastError && tab.url) EvaluateSiteRules(tab.url);
+        if (!chrome.runtime.lastError && tab && tab.url) EvaluateSiteRules(tab.url);
     });
 });
 

@@ -1,7 +1,6 @@
 # AddOns Manager 
 ![Logo](icons/128.png)
-A blazing-fast, strictly vanilla Chrome Extension Manager inspired by **Material Design 3 (M3)**. Effortlessly manage, group, and customize your browser extensions without the bloat of heavy 3rd-party frameworks. 
-
+A lightweight, strictly vanilla Chrome Extension Manager designed with **Material Design 3 (M3)** guidelines. Effortlessly manage, group, schedule, and inspect your browser extensions without the footprint of heavy third-party frameworks. 
 
 ![Users](https://img.shields.io/badge/Users-600+-yellow)
 ![Total Downloads](https://img.shields.io/badge/Downloads-700+-blue)
@@ -11,30 +10,56 @@ A blazing-fast, strictly vanilla Chrome Extension Manager inspired by **Material
 
 ## ✨ Key Features
 
-- **🎨 Dynamic Material Design 3 UI**: The interface dynamically extracts the dominant color from each extension's icon using a background canvas algorithm, automatically applying beautiful, matching tints to hover states and custom right-click menus.
+- **🎨 Dynamic Material Design 3 UI**: The interface dynamically extracts the dominant color from each extension's icon using a background canvas algorithm, applying matching visual tints to hover states and custom right-click menus.
 - **🗂️ Profiles & Workspaces**: Create custom groups (e.g., "Work Mode", "Reading", "Dev Tools"). Switch profiles from the popup to instantly enable/disable massive batches of extensions with a single click.
-- **⚡ Zero Dependencies**: Completely rewritten from the ground up without Bootstrap, Angular, or jQuery. Pure Vanilla JS and CSS3 for absolute maximum performance and zero lag.
-- **📱 Advanced Layout Engine**: Choose between Grid, List, and Compact views. Use the dashboard sliders to precisely adjust Grid Columns (5 to 10) and Icon Sizes.
-- **✏️ Custom Aliases**: Give extensions custom, recognizable names directly from the Dashboard.
-- **☁️ Google Account Sync**: Automatically syncs your Profiles, Themes, and Layout settings across all your devices using Chrome's native sync storage.
-- **🖱️ Smart Context Menu**: Right-click any extension in the popup to instantly access Options, Homepage, Uninstall, Reload, or to "Lock/Unlock" it into your current active profile.
-- **💾 Import & Export**: Back up your carefully curated profiles and settings to a `.json` file and restore them anywhere.
-- **🌓 Auto-Theming**: Supports Light, Dark, and "Auto" (syncs with your Operating System's color scheme).
+- **⌛ Ephemeral Timers (Temporary Enable)**: Temporarily activate extensions for a selected duration (1 minute to 4 hours). The extension automatically disables itself once the timer expires, helping preserve system memory.
+- **🌐 Advanced Site-Based Rules**: Set automated, domain-specific rules to enable or disable individual extensions **or entire profiles** dynamically when navigating to matching website domains.
+- **⏰ Time-Based Scheduler**: Design recurring daily plans or specify monthly calendar dates to enable/disable workspace profiles or individual add-ons automatically.
+- **🛡️ Security & Risk Assessor**: Performs static reviews of extension manifest clearances to group them into High, Medium, and Low risk. Features a collapsible inspector outlining exactly what access privileges each extension possesses.
+- **🔍 Typo-Tolerant Fuzzy Search**: Utilizes real-time, sequence-aware fuzzy search matching for finding specific extensions quickly, even with typos.
+- **💬 Async Custom Dialog Overlays**: Fully custom, non-blocking input modal boxes and warning dialogs built directly into the DOM, eliminating standard browser-native blocking dialogs (`alert`, `confirm`, `prompt`).
+- **♿ Accessible Focus States**: Full support for keyboard-tabbed navigation with clear interactive outline indicator highlights (`:focus-visible`) and keyboard trigger actions.
+- **⚡ Zero Dependencies**: Built entirely with Vanilla JS and CSS3 variables for maximum browser performance and minimal memory overhead.
+- **📱 Advanced Layout Engine**: Choose between Grid, List, and Compact views. Adjust Grid Columns (4 to 7) and Icon Sizes with intuitive sliders on the dashboard.
+- **✏️ Custom Aliases**: Give extensions custom, recognizable alias names directly from the Dashboard.
+- **☁️ Google Account Sync**: Automatically syncs profiles, themes, and configuration structures across all your devices using Chrome's native sync storage.
+- **💾 Backup, Merge, & Restore**: Export your curated profiles, rules, and settings to a `.json` file, with support to overwrite or merge configurations on new devices.
+
+---
 
 ## 🛠️ Usage Guide
 
-- **Switching Profiles**: Open the popup and use the top dropdown. Selecting a profile will instantly disable all extensions _not_ in that profile, and enable all extensions _in_ it.
-- **Locking Extensions**: Want to add an extension to your current profile? Right-click it in the popup and click **Lock**. A small colored dot will appear on the icon to indicate it is part of the active profile.
-- **Dashboard Settings**: Click the ⚙️ icon in the popup to open the full dashboard. Here you can tweak column counts, toggle visibility of UI elements, and rename your extensions.
-- **Reloading Extensions**: If an extension crashes or gets stuck, right-click it in the popup and click **Reload**.
+### 📂 Workspace Profiles & Multi-Select
+- **Switching Profiles**: Open the popup and select a profile from the top dropdown. This action instantly disables all extensions *not* mapped to that profile, and enables those that are.
+- **Batch Actions**: Toggle multi-select mode in the popup to choose several extensions, then enable, disable, uninstall, or add them to workspace profiles simultaneously from the sliding footer drawer.
+- **Locking/Pinning**: Right-click any extension in the popup and click **Lock/Unlock** to bind or unbind it from the currently selected workspace profile.
+
+### ⌛ Temporary Activation (Timer Mode)
+- Right-click an extension in the popup and choose **Enable Temporarily...**.
+- Select your target duration from the modal window. The extension turns on instantly, and a background alarm processes its teardown automatically once time is up.
+
+### 🌐 Site-Based Auto-Toggles
+- Navigate to the **Site Rules** tab in the Dashboard.
+- Provide a target website domain (e.g., `github.com`), select whether to toggle an individual extension or a complete profile, set the target, choose your behavior (Enable/Disable), and save.
+
+### ⏰ Automated Scheduling
+- Under the **Schedules** tab, designate your action time.
+- Map the target (extension or profile group) and choose repeating days of the week (e.g., Monday through Friday) or specific days of the month (e.g., `1, 15, 30`).
+
+### 🛡️ Auditing Permissions
+- Visit the **Security View** tab on the dashboard to view High, Medium, and Low risk summaries.
+- Click on any extension card to expand a detailed inspector breakdown explaining the security implications of its active permissions.
+
+---
 
 ## 🔒 Permissions Justification
 
-This extension requires minimal permissions to operate securely:
+This extension operates locally and uses standard browser APIs securely:
 
-- `management`: Required to fetch, enable, disable, and uninstall your extensions.
-- `storage`: Required to save your layout preferences, profiles, and custom aliases locally and to Google Cloud Sync.
-- `tabs`: Required to open extension Option pages and Homepages in a new browser tab.
+- `management`: Required to query, enable, disable, and uninstall other extensions.
+- `storage`: Required to save layout preferences, rule structures, and custom name mappings locally and to Google Cloud Sync.
+- `tabs`: Required to evaluate site-based automatic rules on active browser pages and load option panels.
+- `alarms`: Required to process recurring schedules and calculate temporary activation teardowns.
 
 ---
 

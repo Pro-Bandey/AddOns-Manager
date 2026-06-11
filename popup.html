@@ -12,7 +12,7 @@
 
     <div id="mainBox">
         <div class="PopupHeader">
-            <input type="text" id="SearchInput" placeholder="Search...">
+            <input type="text" id="SearchInput" placeholder="Search (supports fuzzy matching)...">
             <select id="ProfileSelect">
             </select>
             <select id="LayoutSelect"></select>
@@ -35,7 +35,7 @@
         <hr>
         <ul id="BoxActives" class="BoxActives"></ul>
         <div class="DisableText" id="DisableHeader">
-            <hr>Disabled Exts
+            <hr>Disabled Extensions
         </div>
         <ul id="BoxInActives" class="BoxInActives"></ul>
     </div>
@@ -53,15 +53,41 @@
         </div>
     </div>
 
+    <!-- Context Menu Options -->
     <div id="rightClickMenu" class="showMenu">
         <div class="name" id="ctxName"></div>
         <ul>
             <li id="ctxLock">Unlock</li>
+            <li id="ctxTempEnable">Enable Temporarily...</li>
             <li id="ctxOptions">Options</li>
             <li id="ctxUninstall">Uninstall</li>
             <li id="ctxHomepage">Homepage</li>
             <li id="ctxReload">Reload</li>
         </ul>
+    </div>
+
+    <!-- Temporary Activation Dialog Overlay -->
+    <div class="ConfirmModalBackdrop" id="TempModal" style="display: none;">
+        <div class="ConfirmModal"
+            style="width: 280px; padding: 18px; display: flex; flex-direction: column; gap: 12px;">
+            <h3 style="font-size: 16px; margin: 0; color: var(--AdnMgrColorPrimary);">Temporary Activation</h3>
+            <span style="font-size: 12px; color: var(--AdnMgrColorOnSurfaceVariant);">Keep this extension enabled
+                for:</span>
+            <select id="TempDuration" class="SelectInput" style="width: 100%; padding: 6px 12px; font-size: 13px;">
+                <option value="1">1 Minute (Testing)</option>
+                <option value="5">5 Minutes</option>
+                <option value="15">15 Minutes</option>
+                <option value="30">30 Minutes</option>
+                <option value="60">1 Hour</option>
+                <option value="240">4 Hours</option>
+            </select>
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; width: 100%;">
+                <button class="Btn Danger" id="BtnNoTempModal"
+                    style="padding: 6px 12px; font-size: 12px; float: none;">Cancel</button>
+                <button class="Btn" id="BtnOkTempModal"
+                    style="padding: 6px 12px; font-size: 12px; float: none;">Enable</button>
+            </div>
+        </div>
     </div>
 
     <script src="js/sharedUtils.js"></script>

@@ -261,12 +261,26 @@ body {
 
 .RiskAuditRow {
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    gap: 8px;
     padding: 16px 20px;
     background: var(--AdnMgrColorSurfaceContainer);
     border-radius: var(--AdnMgrShapeLarge);
     border: 1px solid var(--AdnMgrColorSurfaceVariant);
+    cursor: pointer;
+    transition: var(--AdnMgrTransitionStandard);
+}
+
+.RiskAuditRow:hover {
+    background: var(--AdnMgrColorSurfaceContainerHighest);
+    box-shadow: var(--AdnMgrElevation1);
+}
+
+.RiskAuditHeader {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
 }
 
 .RiskAuditRow img {
@@ -290,7 +304,10 @@ body {
 .RiskAuditPermissions {
     font-size: 11px;
     color: var(--AdnMgrColorOnSurfaceVariant);
-    word-break: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 450px;
 }
 
 .RiskBadge {
@@ -307,3 +324,47 @@ body {
 .RiskBadge.high { background: var(--AdnMgrColorError); }
 .RiskBadge.medium { background: #e6900a; }
 .RiskBadge.low { background: var(--AdnMgrColorSuccess); }
+
+/* Interactive Dropdown / Collapsible Permission View */
+.RiskAuditDropdown {
+    display: none;
+    padding-top: 12px;
+    border-top: 1px dashed var(--AdnMgrOutline);
+    font-size: 12px;
+    line-height: 1.5;
+    animation: slideDown 0.2s ease-out;
+}
+
+.RiskAuditDropdown.IsOpen {
+    display: block;
+}
+
+.RiskAuditDropdown ul {
+    list-style: none;
+    margin: 8px 0 0 0;
+    padding-left: 12px;
+}
+
+.RiskAuditDropdown li {
+    margin-bottom: 6px;
+    position: relative;
+}
+
+.RiskAuditDropdown li::before {
+    content: "⦿";
+    color: var(--AdnMgrColorPrimary);
+    display: inline-block;
+    width: fit-content;
+    margin: 0 0.2rem -1em 0;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

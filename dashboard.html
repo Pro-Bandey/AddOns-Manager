@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/dashboard.css">
@@ -142,14 +144,19 @@
 
         <div id="TabRules" class="TabPanel">
             <h2>Site-Based Auto Toggle Rules</h2>
-            <p class="TabSubhead">Automatically enable or disable extensions based on the current website domain.</p>
+            <p class="TabSubhead">Automatically enable or disable extensions or profiles based on the current website
+                domain.</p>
             <br>
             <div class="SettingsCard">
-                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
                     <input type="text" id="RuleDomain" class="SelectInput" placeholder="e.g., github.com"
                         style="flex: 2; min-width: 150px;" />
-                    <select id="RuleExtSelect" class="SelectInput" style="flex: 2; min-width: 180px;"></select>
-                    <select id="RuleActionSelect" class="SelectInput" style="flex: 1; min-width: 100px;">
+                    <select id="RuleType" class="SelectInput" style="flex: 1; min-width: 120px;">
+                        <option value="extension">Individual Extension</option>
+                        <option value="profile">Profile (Group)</option>
+                    </select>
+                    <select id="RuleTarget" class="SelectInput" style="flex: 2; min-width: 180px;"></select>
+                    <select id="RuleAction" class="SelectInput" style="flex: 1; min-width: 100px;">
                         <option value="enable">Enable</option>
                         <option value="disable">Disable</option>
                     </select>
@@ -205,11 +212,10 @@
             <ul id="SchedsList" class="RuleList"></ul>
         </div>
 
-        <!-- NEW SECURITY AUDIT PANEL -->
         <div id="TabRisk" class="TabPanel">
             <h2>Security & Risk Assessor</h2>
             <p class="TabSubhead">Scan extension permissions to detect structural capabilities and potential data access
-                issues.</p>
+                issues. Click any item to inspect granular concerns.</p>
             <br>
             <div class="RiskStats">
                 <div class="RiskStatCard High">
@@ -237,7 +243,7 @@
         </div>
     </div>
 
-
+    <!-- Modals -->
     <div class="InfoModalBackdrop" id="InfoModal">
         <div class="InfoModal">
             <h3 id="ModName">Name</h3>
@@ -248,29 +254,39 @@
             <button class="Btn" id="BtnCloseInfoModal">Close</button>
         </div>
     </div>
+
     <div class="NameInputModalBackdrop" id="NameInputModal">
         <div class="NameModal">
-            <label for="groupName">Add New Name:</label>
-            <input type="text" id="groupName" placeholder="Type Name e.g:Dev, Social" class="NameInpute">
-            <button class="Btn Danger" id="BtnNoNameInputModal">No</button>
-            <button class="Btn" id="BtnOkNameInputModal">Ok</button>
+            <div class="one">
+                <span for="groupName">Add New Name:</span>
+                <input type="text" id="groupName" placeholder="Type Name e.g:Dev, Social" class="NameInpute">
+            </div>
+            <div class="two">
+                <button class="Btn Danger" id="BtnNoNameInputModal">No</button>
+                <button class="Btn" id="BtnOkNameInputModal">Ok</button>
+            </div>
         </div>
     </div>
 
     <div class="ConfirmModalBackdrop" id="ConfirmModal">
         <div class="ConfirmModal">
-            <h3>Warning:</h3>
-            <span id="ConfirmModalText">Confirm Text Here</span>
-            <button class="Btn" id="BtnNoConfirmModal">No</button>
-            <button class="Btn Danger" id="BtnOkConfirmModal">Ok</button>
+            <div class="one">
+                <h3>Warning:</h3>
+                <span id="ConfirmModalText">Confirm Text Here</span>
+            </div>
+            <div class="two">
+                <button class="Btn" id="BtnNoConfirmModal">No</button>
+                <button class="Btn Danger" id="BtnOkConfirmModal">Ok</button>
+            </div>
+
         </div>
     </div>
-    
+
     <div class="AlertModalBackdrop" id="AlertModal">
         <div class="ConfirmModal">
             <h3>Alert:</h3>
             <span id="AlertModalText">Alert Text Here</span>
-            <button class="Btn" id="BtnOkAlertModal">Ok</button>
+            <button class="Btn" style="margin: auto;" id="BtnOkAlertModal">Ok</button>
         </div>
     </div>
 

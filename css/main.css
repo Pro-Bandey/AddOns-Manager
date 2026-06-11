@@ -63,13 +63,18 @@ body.DarkMode {
     font-family: var(--AdnMgrFontFamily);
 }
 
+/* Accessibility Keyboard Focus Highlight */
+*:focus-visible {
+    outline: 1px solid var(--AdnMgrColorPrimary) !important;
+    outline-offset: 2px;
+}
+
 body {
     background: var(--AdnMgrColorSurface);
     color: var(--AdnMgrColorOnSurface);
     font-size: 14px;
 }
 
-/* Material Design Typography Helpers */
 h2 {
     font-weight: 500;
     font-size: 22px;
@@ -113,13 +118,23 @@ h3 {
     box-shadow: var(--AdnMgrElevation1);
 }
 
-#mainBox li svg.pin {
+#mainBox li svg.pin,
+#mainBox li svg.dev {
     width: 20px;
     height: 20px;
-    fill: var(--AdnMgrColorError);
+    fill: var(--AdnMgrColorSuccess);
     position: absolute;
     top: 0;
     left: 0;
+}
+
+#mainBox li svg.dev {
+    width: 30px;
+    height: 30px;
+    top: -5px;
+    left: auto;
+    fill: var(--AdnMgrColorError);
+    right: 0.5px;
 }
 
 .DisableText {
@@ -135,6 +150,7 @@ h3 {
     margin: 0;
     padding: 0;
     list-style: none;
+    width: 100%;
     display: grid;
     gap: 8px;
     justify-items: center;
@@ -154,6 +170,12 @@ h3 {
     transition: var(--AdnMgrTransitionStandard);
     background-repeat: no-repeat;
     background-size: var(--AdnMgrIconBgSize);
+}
+
+/* Add focus support for interactive extension list items */
+.BoxActives li:focus-visible,
+.BoxInActives li:focus-visible {
+    border-color: var(--AdnMgrColorPrimary);
 }
 
 .BoxActives li:hover {
@@ -310,7 +332,7 @@ h3 {
     display: none;
     flex-direction: column;
     width: 180px;
-    padding: 8px 0;
+    padding: 0;
 }
 
 .showMenu.IsVisible {
@@ -344,12 +366,12 @@ h3 {
 }
 
 .showMenu li:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 .showMenu li[disabled] {
     opacity: 0.38;
-    pointer-events: none;
+    cursor: not-allowed;
 }
 
 /* ---------------- MODERN UI CONTROLS ---------------- */
@@ -506,6 +528,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 /* Select & Inputs M3 */
 .SelectInput {
     background: var(--AdnMgrColorSurfaceContainerHighest);
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
     color: var(--AdnMgrColorOnSurface);
     border: none;
     padding: 10px 16px;
@@ -530,9 +555,10 @@ input[type="text"].SelectInput {
     list-style: none;
     margin-bottom: 24px;
     border-bottom: 1px solid var(--AdnMgrColorOutline);
-    padding: 0;
+    padding: 0 0 1rem;
     gap: 8px;
-    overflow-x: auto;
+    width: 100%;
+    overflow: auto hidden;
 }
 
 .group-list-bar li {
@@ -543,7 +569,7 @@ input[type="text"].SelectInput {
     color: var(--AdnMgrColorOnSurfaceVariant);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 1rem;
     font-weight: 500;
     transition: var(--AdnMgrTransitionStandard);
 }
@@ -580,10 +606,13 @@ input[type="text"].SelectInput {
 }
 
 .group-add-btn {
-    background: transparent !important;
+    position: sticky;
+    right: 0;
+    background: var(--AdnMgrColorOnPrimary) !important;
     font-weight: bold;
+    border-radius: var(--AdnMgrShapeMedium) !important;
     font-size: 20px;
-    padding: 8px 24px !important;
+    padding: 8px 36px !important;
 }
 
 /* M3 Dialog / Modal */
@@ -650,6 +679,12 @@ input[type="text"].SelectInput {
     background: var(--AdnMgrColorOnSidebar);
 }
 
+.two {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
 .InfoModal .Btn,
 .NameModal .Btn,
 .ConfirmModal .Btn {
@@ -660,6 +695,7 @@ input[type="text"].SelectInput {
     border-radius: var(--AdnMgrShapePill);
     cursor: pointer;
     float: right;
+    width: 100px;
     font-weight: 500;
     font-size: 14px;
     transition: background 0.2s;
@@ -680,23 +716,23 @@ input[type="text"].SelectInput {
 .NameModal,
 .ConfirmModal {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     gap: 1rem;
     padding-top: 2.5rem;
     position: relative;
 }
 
-.NameModal label,
+.NameModal span,
 .ConfirmModal h3 {
     position: absolute;
-    font-size: 16px;
     top: 20px;
-    left: 34px;
+    left: 30px;
 }
 
 .ConfirmModal h3 {
     color: var(--AdnMgrColorError);
+    top: 10px;
     left: 20px;
 }
 
@@ -734,8 +770,24 @@ input[type="text"].SelectInput {
     border: 1px solid var(--AdnMgrColorSurfaceVariant);
 }
 
+
 ::-webkit-scrollbar {
-    display: none;
     width: 4px;
     height: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    margin-block: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--AdnMgrColorPrimary);
+    border-radius: 20px;
+    cursor: grab;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--AdnMgrColorCard);
+    cursor: grabbing;
 }

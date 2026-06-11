@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const BoxInActives = document.getElementById('BoxInActives');
     const Search = document.getElementById('SearchInput');
     const ProfileSelect = document.getElementById('ProfileSelect');
-    
+
     // Multi-select elements
     const BtnMulti = document.getElementById('BtnMulti');
     const BatchBar = document.getElementById('BatchBar');
@@ -14,7 +14,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const LayoutSel = document.getElementById('LayoutSelect');
     const ThemeSel = document.getElementById('ThemeSelect');
-    
+
+    // Temporary modal elements
+    const TempModal = document.getElementById('TempModal');
+    const BtnNoTempModal = document.getElementById('BtnNoTempModal');
+    const BtnOkTempModal = document.getElementById('BtnOkTempModal');
+    const TempDuration = document.getElementById('TempDuration');
+
     let isMultiMode = false;
     let selectedExts = new Set();
     let ContextExtId = null;
@@ -38,6 +44,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         ProfileSelect.value = "";
     }
 
+    // Fuzzy Matching Logic Utility
+    function fuzzyMatch(text, query) {
+        if (!query) return true;
+        text = text.toLowerCase();
+        query = query.toLowerCase();
+        let textIdx = 0, queryIdx = 0;
+        while (textIdx < text.length && queryIdx < query.length) {
+            if (text[textIdx] === query[queryIdx]) {
+                queryIdx++;
+            }
+            textIdx++;
+        }
+        return queryIdx === query.length;
+    }
+
     // Toggle Multi-Select Mode
     BtnMulti.addEventListener('click', () => {
         isMultiMode = !isMultiMode;
@@ -59,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         BoxInActives.className = `BoxInActives ${AppState.Layout}`;
 
         const exts = await GetExtensions();
-        const query = Search.value.toLowerCase();
+        const query = Search.value;
         const profile = AppState.Groups[ProfileSelect.value];
 
         BoxActives.innerHTML = '';
@@ -70,22 +91,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             const name = custom.name || ext.name;
             const iconUrl = GetBestIcon(ext.icons);
 
-            if (!name.toLowerCase().includes(query)) continue;
+            // Fuzzy Match check
+            if (!fuzzyMatch(name, query)) continue;
 
             const isDev = ext.installType === 'development';
             const isInProfile = profile && profile.includes(ext.id);
 
             const li = document.createElement('li');
             li.dataset.id = ext.id;
+            li.tabIndex = 0; // Accessible keyboard focus path
             li.style.backgroundImage = `url("${iconUrl}")`;
-            
+
             if (selectedExts.has(ext.id)) li.classList.add('SelectedForBatch');
 
             li.innerHTML = `
-                ${isDev && AppState.ShowDevBadge ? '<i>DEV</i>' : ''}
-                ${isInProfile ? '<svg class="pin"><use href="icons/icons.svg#icon-pin">>/use></svg>' : ''}
+                ${isDev && AppState.ShowDevBadge ? '<svg class="dev"><use href="icons/icons.svg#icon-dev"></use></svg>' : ''}
+                ${isInProfile ? '<svg class="pin"><use href="icons/icons.svg#icon-pin"></use></svg>' : ''}
                 <span>${name}</span>
             `;
+
+            // Setup keyboard listeners
+            li.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    li.click();
+                }
+            });
 
             li.addEventListener('click', () => {
                 if (isMultiMode) {
@@ -102,24 +132,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (isMultiMode) return;
                 e.preventDefault();
                 ContextExtId = ext;
+                showContextMenu(e.pageX, e.pageY);
+
 
                 const menu = document.getElementById('rightClickMenu');
-                menu.style.left = `${e.clientX}px`;
-                menu.style.top = `${e.clientY}px`;
-                menu.classList.add('IsVisible');
-
                 const color = await GetDominantColor(iconUrl);
                 document.getElementById('ctxName').innerText = name;
                 document.getElementById('ctxName').style.background = `rgb(${color.r}, ${color.g}, ${color.b})`;
                 menu.querySelectorAll('li').forEach(el => el.style.background = `rgb(${color.r}, ${color.g}, ${color.b})`);
 
                 const ctxLock = document.getElementById('ctxLock');
+                const ctxTempEnable = document.getElementById('ctxTempEnable');
+                const ctxReload = document.getElementById('ctxReload');
                 if (ProfileSelect.value) {
-                    ctxLock.style.display = 'block';
                     const inProf = AppState.Groups[ProfileSelect.value].includes(ext.id);
                     ctxLock.innerText = inProf ? 'Unlock' : 'Lock';
+                    ctxTempEnable.style.display = inProf ? 'none' : 'block';
+                    ctxReload.style.display = inProf ? 'blob' : 'none';
                 } else {
                     ctxLock.style.display = 'none';
+                    ctxTempEnable.style.display = 'none';
+                    ctxReload.style.display = 'block';
                 }
 
                 document.getElementById('ctxOptions').toggleAttribute('disabled', !ext.optionsUrl);
@@ -133,7 +166,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         UpdateBatchUI();
     }
 
-    // Context Menu Handlers
+    function showContextMenu(x, y) {
+        const contextMenu = document.getElementById('rightClickMenu');
+        contextMenu.classList.add('IsVisible');
+        if (x + contextMenu.offsetWidth > window.innerWidth) x = window.innerWidth - contextMenu.offsetWidth - 5;
+        if (y + contextMenu.offsetHeight > window.innerHeight) y = window.innerHeight - contextMenu.offsetHeight - 5;
+        contextMenu.style.left = `${x}px`;
+        contextMenu.style.top = `${y}px`;
+    }
+    // Context Menu Actions
     document.addEventListener('click', () => document.getElementById('rightClickMenu').classList.remove('IsVisible'));
     document.getElementById('ctxOptions').addEventListener('click', () => { if (ContextExtId.optionsUrl) chrome.tabs.create({ url: ContextExtId.optionsUrl }); });
     document.getElementById('ctxHomepage').addEventListener('click', () => { if (ContextExtId.homepageUrl) chrome.tabs.create({ url: ContextExtId.homepageUrl }); });
@@ -141,6 +182,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('ctxReload').addEventListener('click', () => {
         chrome.management.setEnabled(ContextExtId.id, false, () => chrome.management.setEnabled(ContextExtId.id, true, Render));
     });
+
+    // Lock context Profile group action
     document.getElementById('ctxLock').addEventListener('click', () => {
         const grp = AppState.Groups[ProfileSelect.value];
         if (grp.includes(ContextExtId.id)) grp.splice(grp.indexOf(ContextExtId.id), 1);
@@ -148,19 +191,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         SaveAppState(AppState); Render();
     });
 
+    // Temporary Timer Action Initiator
+    document.getElementById('ctxTempEnable').addEventListener('click', (e) => {
+        e.stopPropagation();
+        TempModal.style.display = 'flex';
+    });
+
+    BtnNoTempModal.addEventListener('click', () => {
+        TempModal.style.display = 'none';
+    });
+
+    BtnOkTempModal.addEventListener('click', async () => {
+        const minutes = parseInt(TempDuration.value, 10);
+        if (ContextExtId) {
+            chrome.management.setEnabled(ContextExtId.id, true, async () => {
+                const alarmName = "TempDisable_" + ContextExtId.id;
+                await chrome.alarms.create(alarmName, { delayInMinutes: minutes });
+                TempModal.style.display = 'none';
+                Render();
+            });
+        }
+    });
+
     // Batch Action Handlers
     document.getElementById('BtnBatchEnable').addEventListener('click', async () => {
         const promises = Array.from(selectedExts).map(id => new Promise(r => chrome.management.setEnabled(id, true, () => { chrome.runtime.lastError; r(); })));
         await Promise.all(promises); Render();
     });
-    
+
     document.getElementById('BtnBatchDisable').addEventListener('click', async () => {
         const promises = Array.from(selectedExts).map(id => new Promise(r => chrome.management.setEnabled(id, false, () => { chrome.runtime.lastError; r(); })));
         await Promise.all(promises); Render();
     });
 
     document.getElementById('BtnBatchUninstall').addEventListener('click', async () => {
-        if(confirm("Uninstalling multiple extensions will trigger Chrome's native confirmation dialog for each one. Proceed?")) {
+        if (confirm("Uninstalling multiple extensions will trigger native confirmation alerts. Continue?")) {
             for (const id of selectedExts) {
                 await new Promise(r => chrome.management.uninstall(id, { showConfirmDialog: true }, () => { chrome.runtime.lastError; r(); }));
             }
@@ -176,16 +241,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             SaveAppState(AppState);
             e.target.value = ""; // Reset dropdown
-            alert(`Added ${selectedExts.size} extensions to ${grpName}`);
+            alert(`Added ${selectedExts.size} extensions to profile: ${grpName}`);
             Render();
         }
     });
 
     Search.addEventListener('input', Render);
-    ProfileSelect.addEventListener('change', async (e) => { 
+    ProfileSelect.addEventListener('change', async (e) => {
         const selectedProfile = e.target.value;
-        AppState.PopupSelectedProfile = selectedProfile; 
-        SaveAppState(AppState); 
+        AppState.PopupSelectedProfile = selectedProfile;
+        SaveAppState(AppState);
 
         if (selectedProfile && AppState.Groups[selectedProfile]) {
             const profileExtIds = AppState.Groups[selectedProfile];
@@ -201,7 +266,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             await Promise.all(promises);
         }
-        Render(); 
+        Render();
     });
 
     LayoutSel.addEventListener('change', (e) => { AppState.Layout = e.target.value; SaveAppState(AppState); Render(); });
