@@ -4,7 +4,7 @@
   "short_name": "AddOns Manager",
   "version": "5.5.0",
   "description": "Manage and control your browser extensions more easily",
-  "homepage_url": "https://Pro-Bandey.github.io/Projects/?Pro=AddOns-Manager",
+  "homepage_url": "https://Pro-Bandey.github.io/?id==AddOns-Manager",
 
   "options_page": "dashboard.html",
 
